@@ -6,27 +6,52 @@
 
     <ScrollView>
         <StackLayout>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <ListView ItemsSource="{Binding Cards}">
-                    <ListView.ItemTemplate>
-                                   <DataTemplate>
-                        <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
-                                    </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+            </Grid>
+
 
             <Label Text="Название" TextColor ="Black" HorizontalOptions ="Center" />
-            <Entry  Height="30" Width="250" Margin="0,10,0,0" Grid.Row="3"  Background="#FFF4D2D7"/>
+            <Entry x:Name="TitleEntry" Text="Шут" IsEnabled="False"  Completed="OnEntryCompleted"/>
             <Label Text="Описание" TextColor ="Black" HorizontalOptions ="Center" />
-            <Entry  Height="30" Width="250" Margin="0,10,0,0" Grid.Row="3"  Background="#FFF4D2D7"/>
-            
+            <Entry x:Name="DescriptionEntry" Text="карта предвещает новые возможности, спонтанные решения и свежесть взгляда. Это время для смелых начинаний, приключений и исследований неизвестного." IsEnabled="False"/>
                 <Image Source="fool.png"  Aspect="AspectFit" HeightRequest="500" />
-                <Image Source="emperor.png" VerticalOptions="End" Aspect="Center"/>
-                <Image Source="empress.png" VerticalOptions="End" Aspect="Center"/>
-                <Image Source="hierophant.png"  VerticalOptions="End" Aspect="Center" />
-                <Image Source="highpriestess.png" VerticalOptions="End" Aspect="Center" />
-                <Image Source="mag.png"  VerticalOptions="End" Aspect="Center" />
-
+            <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
+            <Label  Text="Название" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="TitleEntry" Text="Император" IsEnabled="False"/>
+            <Label Text="Описание" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="DescriptionEntry" Text="символизирует мужество, силу, лидерство, уважение, решительность и ответственность. Император — это строгий, но справедливый руководитель." IsEnabled="False"/>
+            <Image Source="emperor.png" VerticalOptions="End" Aspect="Center"/>
+            <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
+            <Label Text="Название" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="TitleEntry" Text="Императрица" IsEnabled="False"/>
+            <Label Text="Описание" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="DescriptionEntry" Text="Указывает на способность заботиться, взращивать, наполнять жизнь теплом и смыслом." IsEnabled="False"/>
+            <Image Source="empress.png" VerticalOptions="End" Aspect="Center"/>
+            <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
+            <Label Text="Название" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="TitleEntry" Text="Иерофант" IsEnabled="False"/>
+            <Label Text="Описание" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="DescriptionEntry" Text="символизирует духовность в контексте традиций, устоявшихся норм и коллективной веры." IsEnabled="False"/>
+            <Image Source="hierophant.png"  VerticalOptions="End" Aspect="Center" />
+            <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
+            <Label Text="Название" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="TitleEntry" Text="Верховная жрица" IsEnabled="False"/>
+            <Label Text="Описание" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="DescriptionEntry" Text="указывает на игнорирование интуиции и неспособность проникнуть в глубокие смыслы" IsEnabled="False"/>
+            <Image Source="highpriestess.png" VerticalOptions="End" Aspect="Center" />
+            <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
+            <Label Text="Название" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="TitleEntry" Text="Маг" IsEnabled="False"/>
+            <Label Text="Описание" TextColor ="Black" HorizontalOptions ="Center" />
+            <Entry x:Name="DescriptionEntry" Text="символизирует силу воли, мастерство и креативность.Она олицетворяет способность человека использовать свои внутренние ресурсы и способности" IsEnabled="False"/>
+            <Image Source="mag.png"  VerticalOptions="End" Aspect="Center" />
+            <Button Text="🔧" CommandParameter="{Binding}" Clicked="CardEdit" Background="Black" WidthRequest="50" HeightRequest="50"/>
+           
 
             <CarouselView Loop="True" BindingContext="{Binding Cards}">
                 <CarouselView.ItemTemplate>
