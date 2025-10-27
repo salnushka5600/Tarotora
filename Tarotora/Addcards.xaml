@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Tarotora.Addcards"
+             Title="Addcard" Background="LightPink">
+    <StackLayout>
+
+        <Label Text="Название" TextColor ="Black"  />
+        <Entry  Height="30" Width="250" Margin="0,10,0,0" Grid.Row="3"  Background="#FFF4D2D7" x:Name="Titl"/>
+        <Label Text="Описание" TextColor ="Black"/>
+        <Entry  Height="30" Width="250" Margin="0,10,0,0" Grid.Row="3"  Background="#FFF4D2D7" VerticalOptions="Center" x:Name="Descrip" />
+        <CarouselView x:Name="CarouselView" PeekAreaInsets="100" ItemsSource="{Binding Images}">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout>
+                        <Image Source="{Binding Image}" Aspect="AspectFill"/>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+        <Button Text="Сохранить" Clicked="Prosmotrkolod" WidthRequest="200"/>
+    </StackLayout>
+</ContentPage>
+    
+    
