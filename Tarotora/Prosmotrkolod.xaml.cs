@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics.Metrics;
 using Tarotora.BD;
 
@@ -5,72 +6,48 @@ namespace Tarotora;
 
 public partial class Prosmotrkolod : ContentPage
 {
-    DBfuncional db;
-    private Card currentCard;
+    private readonly DBfuncional db;
+
     public Prosmotrkolod(DBfuncional database)
-	{
-		InitializeComponent();
-        BindingContext = this;
+    {
+        InitializeComponent();
         db = database;
+        BindingContext = this;
         LoadCards();
     }
+
     private async void LoadCards()
     {
         var cards = await db.GetCard();
-        Cards = cards;
-        OnPropertyChanged(nameof(Cards));
-    }
-   
-    public List<Card> Cards { get; set; }
-    private void Switch_Toggled(object sender, ToggledEventArgs e)
-    {
-        Switch switchItem = (Switch)sender;
-        if (!switchItem.IsToggled)
-        {
-            switchItem.Background = new SolidColorBrush(Color.FromArgb("#FFF4D2D7"));
-        }
-
+        CardsView.ItemsSource = null;
+        CardsView.ItemsSource = cards;
     }
 
-    private async void CardEdit(object sender, EventArgs e)
+    private async void OnEditClicked(object sender, EventArgs e)
     {
         var button = (Button)sender;
         var card = button.CommandParameter as Card;
+        if (card == null) return;
 
-        //// Открываем страницу редактирования, передаём карту и базу
-        //var editPage = new Addcards(db, card);
+        string newTitle = await DisplayPromptAsync("Редактирование", "Введите новое название:", initialValue: card.Title);
+        if (newTitle == null) return;
+        string newDesc = await DisplayPromptAsync("Редактирование", "Введите новое описание:", initialValue: card.Description);
+        if (newDesc == null) return;
 
-        //// Подписываемся на событие, чтобы обновить страницу после сохранения
-        //editPage.Disappearing += (s, args) =>
-        //{
-        //    LoadCards(); // ? обновляем данные при возвращении
-        //};
-        await Navigation.PushAsync(new Addcards(db));
-        // Переключаем режим редактирования
-        bool editing = !TitleEntry.IsEnabled;
-
-        TitleEntry.IsEnabled = editing;
-        DescriptionEntry.IsEnabled = editing;
-
-        if (editing)
+        bool changeImage = await DisplayAlert("Изображение", "Хотите изменить изображение?", "Да", "Нет");
+        if (changeImage) 
         {
-            await DisplayAlert("Редактирование", "Теперь вы можете изменить данные и нажать Enter для сохранения.", "ОК");
+            string newImage = await DisplayPromptAsync("Редактирование", "Введите путь к изображению (например: fool.png):", initialValue: card.Image);
+            if(!string.IsNullOrWhiteSpace(newImage)) 
+                card.Image = newImage;
         }
+
+
+        card.Title = newTitle;
+        card.Description = newDesc;
+
+        await db.UpdateCard(card);
+        await DisplayAlert("Сохранено", "Изменения успешно применены!", "ОК");
+        LoadCards();
     }
-
-    private async void OnEntryCompleted(object sender, EventArgs e)
-    {
-        if (currentCard == null) return;
-
-        currentCard.Title = TitleEntry.Text;
-        currentCard.Description = DescriptionEntry.Text;
-
-        await db.UpdateCard(currentCard);
-
-        TitleEntry.IsEnabled = false;
-        DescriptionEntry.IsEnabled = false;
-
-        await DisplayAlert("Сохранено", "Изменения успешно обновлены!", "ОК");
-    }
-}
 }

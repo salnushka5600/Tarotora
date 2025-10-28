@@ -10,8 +10,7 @@ namespace Tarotora.BD
     {
         List<User> users = new();
         List<Card> cards = new();
-      public List<Test> tests = new();
-        List<Images> images = new();
+        List<Test> tests = new();
 
         //для пользователей
         public async Task AddUser(User user) => users.Add(user);
@@ -47,8 +46,7 @@ namespace Tarotora.BD
                 card.Title = updated.Title;
                 card.Description = updated.Description;
                 card.Subscribe = updated.Subscribe;
-                card.ImageId = updated.ImageId;
-                card.Images = updated.Images;
+                card.Image = updated.Image;
             }
 
         }
@@ -91,67 +89,13 @@ namespace Tarotora.BD
         public async Task RemoveTest(int id) => tests.RemoveAll(c => c.Id == id);
         public async Task<List<Test>> GetTest() => tests;
         public async Task GetTestId(int id) => tests.FirstOrDefault(c => c.Id == id);
-        
-        
-        
-        
-        
-        
-        //После лекции удалить
-        public async Task AddImage(Images image) => images.Add(image);
+    
 
-        public async Task UpdateImage(Images updated)
+        public async Task SeedCards()
         {
-            var image = images.FirstOrDefault(c => c.Id == updated.Id);
-            if (image != null)
-            {
-                image.Image = updated.Image;
-            }
-
-        }
-
-        public async Task RemoveImage(int id) => images.RemoveAll(c => c.Id == id);
-        public async Task<List<Images>> GetImage() => images;
-        public async Task GetIdImage(int id) => images.FirstOrDefault(c => c.Id == id);
-
-        public async Task Imagess()
-        {
-            images.Add(new Images
-            {
-                Id = 1,
-                Image = "Resources/Images/emperor.png"
-
-            });
-            images.Add(new Images
-            {
-                Id = 2,
-                Image = "Resources/Images/empress.png"
-
-            });
-            images.Add(new Images
-            {
-                Id = 3,
-                Image = "Resources/Images/fool.png"
-
-            });
-            images.Add(new Images
-            {
-                Id = 4,
-                Image = "hierophant.png"
-
-            });
-            images.Add(new Images
-            {
-                Id = 5,
-                Image = "highpriestess.png"
-
-            });
-            images.Add(new Images
-            {
-                Id = 6,
-                Image = "mag.png"
-
-            });
+            cards.Add(new Card { Id = 1, Title = "Шут", Description = "Новые возможности", Image = "fool.png" });
+            cards.Add(new Card { Id = 2, Title = "Император", Description = "Лидерство и сила", Image = "emperor.png" });
+            cards.Add(new Card { Id = 3, Title = "Императрица", Description = "Забота и плодородие", Image = "empress.png" });
         }
 
     }

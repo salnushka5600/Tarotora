@@ -8,7 +8,7 @@ namespace Tarotora
         public MainPage()
         {
             InitializeComponent();
-            db.Imagess();
+            db.SeedCards();
         }
 
         private async void Addkard(object sender, EventArgs e)

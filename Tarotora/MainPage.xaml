@@ -3,53 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Tarotora.MainPage" BackgroundColor="Violet"  >
 
-    <VerticalStackLayout Padding="20" Spacing="10">
+    <VerticalStackLayout Padding="40" Spacing="30" VerticalOptions="Center">
+        <Label Text="🔮 Tarotora" 
+               FontSize="48"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               TextColor="Black" />
 
+        <Button Text="Добавить карту"
+                Clicked="Addkard"
+                BackgroundColor="#D873F3"
+                TextColor="White"
+                CornerRadius="25"
+                FontSize="20"
+                Padding="15,10"/>
 
-        <Label x:Name="Display"/>
+        <Button Text="Просмотр колоды"
+                Clicked="Prosmotrkolod"
+                BackgroundColor="#C965E0"
+                TextColor="White"
+                CornerRadius="25"
+                FontSize="20"
+                Padding="15,10"/>
 
-
-
-        <Grid Grid.Row="2">
-
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-               
-            </Grid.ColumnDefinitions>
-
-        </Grid>
-        <StackLayout>
-
-           
-            <Label Text="ТароTora" Grid.Column="2" Grid.Row="4" HorizontalOptions ="Center" TextColor="Black" FontSize="50"/>
-            <Button  Text="Добавить карту" Clicked="Addkard" Grid.Row="5" Grid.Column="2" HorizontalOptions ="Center" TextColor="Black" FontSize="30"/>
-            <Button   Text="Просмотр колоды" Clicked="Prosmotrkolod" Grid.Row="8" Grid.Column="2" HorizontalOptions ="Center" TextColor="Black" FontSize="30"/>
-            <Button   Text="Проверка" Clicked="Check" Grid.Row="8" Grid.Column="2" HorizontalOptions ="Center" TextColor="Black" FontSize="30"/>
-           
-
-
-
-        </StackLayout>
-
-
-
-
-
-
-
+        <Button Text="Проверка пользователей"
+                Clicked="Check"
+                BackgroundColor="#A84BD6"
+                TextColor="White"
+                CornerRadius="25"
+                FontSize="20"
+                Padding="15,10"/>
     </VerticalStackLayout>
 
 

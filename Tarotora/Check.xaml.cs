@@ -28,13 +28,14 @@ public partial class Check : ContentPage
         UsersListView.ItemsSource = users;
     }
 
-    private void OnUserSelected(object sender, SelectedItemChangedEventArgs e)
+    private async void OnUserSelected(object sender, SelectedItemChangedEventArgs e)
     {
         var selectedUser = e.SelectedItem as User;
         if (selectedUser != null)
         {
            _userId = selectedUser.Id;
-            var testRecord = db.tests.FirstOrDefault(t => t.IdUser == this._userId && t.IdCard == 1);
+            var allTests = await db.GetTest();
+            var testRecord = allTests.FirstOrDefault(t => t.IdUser == _userId && t.IdCard == 1);
             if (testRecord != null)
             {
                 Slider.Value = testRecord.Progress;

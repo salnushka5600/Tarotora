@@ -12,8 +12,7 @@ namespace Tarotora.BD
         public string Title { get; set; }
         public string Description { get; set; }
         public bool Subscribe { get; set; }
-        public int ImageId {  get; set; }
-        public Images Images { get; set; }
+        public string Image { get; set; }
 
     }
 }

@@ -5,42 +5,61 @@ namespace Tarotora;
 
 public partial class Addcards : ContentPage
 {
-    DBfuncional db;
-    Card currentCard; 
+    private readonly DBfuncional db;
+    private Card currentCard;
 
     public Addcards(DBfuncional database, Card card = null)
-	{
-		InitializeComponent();
-		db = database;
-		Load();
+    {
+        InitializeComponent();
+        db = database;
+
         if (card != null)
         {
             currentCard = card;
-            Titl.Text = currentCard.Title;
-            Descrip.Text = currentCard.Description;
+            Titl.Text = card.Title;
+            Descrip.Text = card.Description;
+            ImageEntry.Text = card.Image;
+            if (!string.IsNullOrWhiteSpace(card.Image))
+            {
+                PreviewImage.Source = card.Image;
+                PreviewImage.IsVisible = true;
+            }
         }
         else
         {
             currentCard = new Card();
         }
     }
-    public async void Load()
+
+    private void OnPreviewClicked(object sender, EventArgs e)
     {
-        var images = await db.GetImage();
+        string imgPath = ImageEntry.Text?.Trim();
+        if (!string.IsNullOrWhiteSpace(imgPath))
+        {
+            PreviewImage.Source = imgPath;
+            PreviewImage.IsVisible = true;
+        }
+        else
+        {
+            DisplayAlert("Ошибка", "Введите путь к изображению (например: fool.png)", "ОК");
+        }
     }
-    private async void Prosmotrkolod(object sender, EventArgs e)
+
+    private async void OnSaveClicked(object sender, EventArgs e)
     {
         string title = Titl.Text?.Trim();
-        string dis = Descrip.Text?.Trim();
+        string desc = Descrip.Text?.Trim();
+        string img = ImageEntry.Text?.Trim();
 
-        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(dis))
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(desc))
         {
-            await DisplayAlert("Ошибка", "Напишите название и описание карты", "Ок");
+            await DisplayAlert("Ошибка", "Введите название и описание карты", "ОК");
             return;
         }
 
         currentCard.Title = title;
-        currentCard.Description = dis;
+        currentCard.Description = desc;
+        currentCard.Image = img;
 
         if (currentCard.Id != 0)
         {
@@ -48,12 +67,12 @@ public partial class Addcards : ContentPage
         }
         else
         {
+            var allCards = await db.GetCard();
+            currentCard.Id = allCards.Count > 0 ? allCards.Max(c => c.Id) + 1 : 1;
             await db.AddCard(currentCard);
         }
 
+        await DisplayAlert("Сохранено", "Карта успешно добавлена/обновлена!", "ОК");
         await Navigation.PushAsync(new Prosmotrkolod(db));
     }
-
-    
-	
 }
