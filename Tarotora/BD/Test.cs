@@ -11,9 +11,9 @@ namespace Tarotora.BD
         public int Id { get; set; }
         public int Score { get; set; }
         public int IdUser { get; set; }
-        public User User { get; set; }
+        public User Users { get; set; }
         public int IdCard { get; set; }
-        public Card Card { get; set; }
+        public Card Cards { get; set; }
         public int Progress { get; set; }
 
     }

@@ -9,6 +9,7 @@ namespace Tarotora
         {
             InitializeComponent();
             db.SeedCards();
+            db.SeedUsers();
         }
 
         private async void Addkard(object sender, EventArgs e)

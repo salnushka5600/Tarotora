@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tarotora.BD
 {
-   public class DBfuncional
+    public class DBfuncional
     {
         List<User> users = new();
         List<Card> cards = new();
@@ -21,6 +21,7 @@ namespace Tarotora.BD
             if (user != null)
             {
                 user.Subscribe = updated.Subscribe;
+                user.Name = updated.Name;
                 user.IdCard = updated.IdCard;
                 user.Card = updated.Card;
             }
@@ -29,7 +30,7 @@ namespace Tarotora.BD
 
         public async Task RemoveUser(int id) => users.RemoveAll(c => c.Id == id);
         public async Task<List<User>> GetUser() => users;
-        public async Task GetUserId (int id) => users.FirstOrDefault(c => c.Id == id);
+        public async Task GetUserId(int id) => users.FirstOrDefault(c => c.Id == id);
 
 
         //для карт
@@ -78,9 +79,9 @@ namespace Tarotora.BD
             {
                 test.Score = updated.Score;
                 test.IdUser = updated.IdUser;
-                test.User = updated.User;
+                test.Users = updated.Users;
                 test.IdCard = updated.IdCard;
-                test.Card = updated.Card;
+                test.Cards = updated.Cards;
                 test.Progress = updated.Progress;
             }
 
@@ -89,7 +90,7 @@ namespace Tarotora.BD
         public async Task RemoveTest(int id) => tests.RemoveAll(c => c.Id == id);
         public async Task<List<Test>> GetTest() => tests;
         public async Task GetTestId(int id) => tests.FirstOrDefault(c => c.Id == id);
-    
+
 
         public async Task SeedCards()
         {
@@ -98,5 +99,36 @@ namespace Tarotora.BD
             cards.Add(new Card { Id = 3, Title = "Императрица", Description = "Забота и плодородие", Image = "empress.png" });
         }
 
+        public async Task<int> GetUserProgress(int userId)
+        {
+            var allCards = await GetCard();
+            var allTests = await GetTest();
+
+            // Считаем, сколько карт прошёл пользователь
+            int viewedCount = allTests.Count(t => t.IdUser == userId);
+
+            if (allCards.Count == 0)
+                return 0;
+
+            int progress = (int)((double)viewedCount / allCards.Count * 100);
+            return progress;
+        }
+
+        public async Task SeedUsers()
+        {
+            if (users.Count == 0)
+            {
+                users.Add(new User { Id = 1, Name = "Алиса", Subscribe = true });
+                users.Add(new User { Id = 2, Name = "Боб", Subscribe = false });
+                users.Add(new User { Id = 3, Name = "Кира", Subscribe = true });
+            }
+
+            if (tests.Count == 0)
+            {
+                tests.Add(new Test { Id = 1, IdUser = 1, IdCard = 1, Progress = 30 });
+                tests.Add(new Test { Id = 2, IdUser = 2, IdCard = 1, Progress = 70 });
+                tests.Add(new Test { Id = 3, IdUser = 3, IdCard = 1, Progress = 90 });
+            }
+        }
     }
 }
