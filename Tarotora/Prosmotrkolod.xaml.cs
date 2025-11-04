@@ -28,12 +28,12 @@ public partial class Prosmotrkolod : ContentPage
         var button = (Button)sender;
         var card = button.CommandParameter as Card;
         if (card == null) return;
-
         string newTitle = await DisplayPromptAsync("Редактирование", "Введите новое название:", initialValue: card.Title);
+
         if (newTitle == null) return;
         string newDesc = await DisplayPromptAsync("Редактирование", "Введите новое описание:", initialValue: card.Description);
-        if (newDesc == null) return;
 
+        if (newDesc == null) return;
         bool changeImage = await DisplayAlert("Изображение", "Хотите изменить изображение?", "Да", "Нет");
         if (changeImage) 
         {
@@ -42,12 +42,20 @@ public partial class Prosmotrkolod : ContentPage
                 card.Image = newImage;
         }
 
-
         card.Title = newTitle;
         card.Description = newDesc;
-
         await db.UpdateCard(card);
         await DisplayAlert("Сохранено", "Изменения успешно применены!", "ОК");
+        LoadCards();
+    }
+    private async void DeleteClicked(object sender, EventArgs e)
+    {
+        var button = (Button)sender;
+        var card = button.CommandParameter as Card;
+        if (card == null) return;
+        bool ready = await DisplayAlert("Подтверждение", "Хотите удалить карту?", "Да", "Нет");
+        if (!ready) return;
+        await db.RemoveCard(card.Id);
         LoadCards();
     }
 }

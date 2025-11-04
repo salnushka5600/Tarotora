@@ -5,7 +5,7 @@ namespace Tarotora;
 public partial class Check : ContentPage
 {
     private readonly DBfuncional db;
-    private int _userId;
+    private int userId;
     private List<User> users = new();
 
     public Check(DBfuncional database)
@@ -26,10 +26,10 @@ public partial class Check : ContentPage
         if (e.CurrentSelection.FirstOrDefault() is not User selectedUser)
             return;
 
-        _userId = selectedUser.Id;
+        userId = selectedUser.Id;
 
         var allTests = await db.GetTest();
-        var record = allTests.FirstOrDefault(t => t.IdUser == _userId);
+        var record = allTests.FirstOrDefault(t => t.IdUser == userId);
         int progress = record?.Progress ?? 0;
 
         Slider.Value = progress;
@@ -52,10 +52,10 @@ public partial class Check : ContentPage
             test.Progress = rand.Next(0, 101);
         }
 
-        if (_userId != 0)
+        if (userId != 0)
         {
-            var updated = tests.FirstOrDefault(t => t.IdUser == _userId);
-            var currentUser = users.FirstOrDefault(u => u.Id == _userId);
+            var updated = tests.FirstOrDefault(t => t.IdUser == userId);
+            var currentUser = users.FirstOrDefault(u => u.Id == userId);
 
             if (updated != null && currentUser != null)
             {
@@ -65,9 +65,10 @@ public partial class Check : ContentPage
         }
         else
         {
-            await DisplayAlert("Подсказка", "Сначала выберите пользователя 👆", "ОК");
+            await DisplayAlert("Подсказка", "Сначала выберите пользователя", "ОК");
         }
     }
 }
+
 
 

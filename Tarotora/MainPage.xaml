@@ -1,38 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Tarotora.MainPage" BackgroundColor="Violet"  >
+             x:Class="Tarotora.MainPage" BackgroundColor="LightPink"  >
 
     <VerticalStackLayout Padding="40" Spacing="30" VerticalOptions="Center">
-        <Label Text="🔮 Tarotora" 
-               FontSize="48"
-               FontAttributes="Bold"
-               HorizontalOptions="Center"
-               TextColor="Black" />
-
-        <Button Text="Добавить карту"
-                Clicked="Addkard"
-                BackgroundColor="#D873F3"
-                TextColor="White"
-                CornerRadius="25"
-                FontSize="20"
-                Padding="15,10"/>
-
-        <Button Text="Просмотр колоды"
-                Clicked="Prosmotrkolod"
-                BackgroundColor="#C965E0"
-                TextColor="White"
-                CornerRadius="25"
-                FontSize="20"
-                Padding="15,10"/>
-
-        <Button Text="Проверка пользователей"
-                Clicked="Check"
-                BackgroundColor="#A84BD6"
-                TextColor="White"
-                CornerRadius="25"
-                FontSize="20"
-                Padding="15,10"/>
+        <Label Text="Tarotora" FontSize="48" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black" />
+        <Button Text="Добавить карту" Clicked="Addkard" BackgroundColor="HotPink" TextColor="White" CornerRadius="25" FontSize="20" Padding="15,10"/>
+        <Button Text="Просмотр колоды" Clicked="Prosmotrkolod" BackgroundColor="HotPink" TextColor="White" CornerRadius="25" FontSize="20" Padding="15,10"/>
+        <Button Text="Проверка пользователей" Clicked="Check" BackgroundColor="HotPink" TextColor="White" CornerRadius="25" FontSize="20" Padding="15,10"/>
     </VerticalStackLayout>
 
 

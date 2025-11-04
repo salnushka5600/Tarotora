@@ -6,44 +6,17 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="Колода Таро"
-               FontSize="32"
-               FontAttributes="Bold"
-               HorizontalOptions="Center"
-               TextColor="Black" />
-
-            <CollectionView x:Name="CardsView"
-                        ItemsSource="{Binding Cards}"
-                        SelectionMode="None"
-                        HorizontalOptions="Center"
-                        ItemsLayout="VerticalGrid, 3">
+            <Label Text="Колода Таро" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black" />
+            <CollectionView x:Name="CardsView" ItemsSource="{Binding Cards}" SelectionMode="None" HorizontalOptions="Center" ItemsLayout="VerticalGrid, 3">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame BackgroundColor="White"
-                           CornerRadius="20"
-                           Padding="15"
-                           Margin="10"
-                           HasShadow="True"
-                           WidthRequest="280"   
-                            HorizontalOptions="Center">
+                        <Frame BackgroundColor="White" CornerRadius="20" Padding="15" Margin="10" HasShadow="True" WidthRequest="280" HorizontalOptions="Center">
                             <VerticalStackLayout Spacing="10">
-                                <Image Source="{Binding Image}"
-                                   Aspect="AspectFit"
-                                   HeightRequest="200" />
-                                <Label Text="{Binding Title}"
-                                   FontSize="20"
-                                   TextColor="Black"
-                                   HorizontalOptions="Center" />
-                                <Label Text="{Binding Description}"
-                                   FontSize="14"
-                                   TextColor="Gray"
-                                   HorizontalTextAlignment="Center" />
-                                <Button Text="Редактировать 🔧"
-                                    BackgroundColor="HotPink"
-                                    TextColor="White"
-                                    CornerRadius="15"
-                                    CommandParameter="{Binding}"
-                                    Clicked="OnEditClicked" />
+                                <Image Source="{Binding Image}" Aspect="AspectFit" HeightRequest="200" />
+                                <Label Text="{Binding Title}" FontSize="20" TextColor="Black" HorizontalOptions="Center" />
+                                <Label Text="{Binding Description}" FontSize="14" TextColor="Gray" HorizontalTextAlignment="Center" />
+                                <Button Text="Редактировать 🔧" BackgroundColor="HotPink" TextColor="White" CornerRadius="15" CommandParameter="{Binding}" Clicked="OnEditClicked" />
+                                <Button Text="Удалить" BackgroundColor="HotPink" TextColor="White" CornerRadius="15" CommandParameter="{Binding}" Clicked="DeleteClicked" />
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>

@@ -56,19 +56,6 @@ namespace Tarotora.BD
         public async Task<List<Card>> GetCard() => cards;
         public async Task GetCardId(int id) => cards.FirstOrDefault(c => c.Id == id);
 
-        //public async  Task SaveFile()
-        //{
-        //    try
-        //    {
-        //        object value = await File.WriteAllTextAsync(FileSystem.Current.AppDataDirectory + "/Prosmotrkolod"); 
-
-        //    }
-        //    catch (Exception ex) { }
-
-
-        //для проверки
-
-
 
         public async Task AddTest(Test test) => tests.Add(test);
 
