@@ -4,12 +4,12 @@ namespace Tarotora
 {
     public partial class MainPage : ContentPage
     {
-       public DBfuncional db = new DBfuncional();
+       public DBfuncional db = DBfuncional.GetDB;
         public MainPage()
         {
             InitializeComponent();
-            db.SeedCards();
-            db.SeedUsers();
+            //db.SeedCards();
+            //db.SeedUsers();
         }
 
         private async void Addkard(object sender, EventArgs e)

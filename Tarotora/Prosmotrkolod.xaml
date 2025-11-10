@@ -6,7 +6,9 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="Колода Таро" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black" />
+            <Label FontSize="32" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black" />
+            <Label Text="{Binding CategPicker}" TextColor="Black" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center" />
+            
             <CollectionView x:Name="CardsView" ItemsSource="{Binding Cards}" SelectionMode="None" HorizontalOptions="Center" ItemsLayout="VerticalGrid, 3">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -17,13 +19,17 @@
                                 <Label Text="{Binding Description}" FontSize="14" TextColor="Gray" HorizontalTextAlignment="Center" />
                                 <Button Text="Редактировать 🔧" BackgroundColor="HotPink" TextColor="White" CornerRadius="15" CommandParameter="{Binding}" Clicked="OnEditClicked" />
                                 <Button Text="Удалить" BackgroundColor="HotPink" TextColor="White" CornerRadius="15" CommandParameter="{Binding}" Clicked="DeleteClicked" />
+                                <Button Text="Сохранить" BackgroundColor="HotPink" TextColor="White" CornerRadius="30" CommandParameter="{Binding}" Clicked="SaveClicked" />
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+           
         </VerticalStackLayout>
+
     </ScrollView>
+    
 </ContentPage>
 
 

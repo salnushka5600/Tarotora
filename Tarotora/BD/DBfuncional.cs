@@ -2,15 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Tarotora.BD
 {
     public class DBfuncional
     {
-        List<User> users = new();
-        List<Card> cards = new();
-        List<Test> tests = new();
+
+        static DBfuncional instance = null;
+        public static DBfuncional GetDB { get { if (instance == null) { instance = new DBfuncional(); ReadFile(instance); } return instance; } }
+        private DBfuncional() { }
+         List<User> users = new List<User>();
+         List<Card> cards = new List<Card>();
+         List<Test> tests = new List<Test>();
+        public static DTOobject ConvertDTO(DBfuncional dBfuncional) 
+        {
+           var Out =  new DTOobject();
+            Out.users = dBfuncional.users;
+            Out.cards = dBfuncional.cards;
+            Out.tests = dBfuncional.tests;
+            return Out;
+        }
+
+        public static bool SavetoFile (DBfuncional dBfuncional)
+        {
+            var Dto = ConvertDTO(dBfuncional);
+            string jsoon = JsonSerializer.Serialize(Dto);
+            string dir = FileSystem.Current.AppDataDirectory;
+
+            FileStream Stream = File.Create(dir + "/Taro.txt");
+            byte[] byt = Encoding.UTF8.GetBytes(jsoon);
+            Stream.Write(byt);
+            Stream.Close();
+            return true;
+            
+        }
+
+        public static bool ReadFile (DBfuncional dBfuncional)
+        {
+            string dir = FileSystem.Current.AppDataDirectory;
+            byte[] byt = File.ReadAllBytes((dir + "/Taro.txt"));
+            if (byt == null) return false;
+            string jsoon = Encoding.UTF8.GetString(byt);
+            DTOobject dbdto;
+            try
+            {
+                dbdto = JsonSerializer.Deserialize<DTOobject>(jsoon);
+            }
+            catch (Exception ex) {return false; }
+            dBfuncional.users = dbdto.users;
+            dBfuncional.cards = dbdto.cards;
+            dBfuncional.tests = dbdto.tests;
+            return true;
+        }
 
         //для пользователей
         public async Task AddUser(User user) => users.Add(user);
@@ -35,8 +81,6 @@ namespace Tarotora.BD
 
         //для карт
 
-
-
         public async Task AddCard(Card card) => cards.Add(card);
 
         public async Task UpdateCard(Card updated)
@@ -48,6 +92,7 @@ namespace Tarotora.BD
                 card.Description = updated.Description;
                 card.Subscribe = updated.Subscribe;
                 card.Image = updated.Image;
+                card.CategPicker = updated.CategPicker;
             }
 
         }
@@ -81,10 +126,10 @@ namespace Tarotora.BD
 
         public async Task SeedCards()
         {
-            cards.Add(new Card { Id = 1, Title = "Шут", Description = "Новые возможности", Image = "fool.png" });
-            cards.Add(new Card { Id = 2, Title = "Император", Description = "Лидерство и сила", Image = "emperor.png" });
-            cards.Add(new Card { Id = 3, Title = "Императрица", Description = "Забота и плодородие", Image = "empress.png" });
+            
+            SavetoFile(this);
         }
+
 
         public async Task<int> GetUserProgress(int userId)
         {
