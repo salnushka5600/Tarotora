@@ -14,7 +14,6 @@ namespace Tarotora.BD
         public string Description { get; set; }
         public bool Subscribe { get; set; }
         public string Image { get; set; }
-        public string CategPicker {  get; set; }
 
     }
 }

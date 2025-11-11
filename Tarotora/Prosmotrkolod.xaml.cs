@@ -7,9 +7,7 @@ namespace Tarotora;
 public partial class Prosmotrkolod : ContentPage
 {
     private readonly DBfuncional db;
-    private readonly string? category; //nullable так как может быть null
-
-    // Конструктор без категории — для вызова из MainPage
+    
     public Prosmotrkolod(DBfuncional database)
     {
         InitializeComponent();
@@ -18,16 +16,8 @@ public partial class Prosmotrkolod : ContentPage
         LoadCards(); // покажет все карты
     }
 
-    // Конструктор с категорией — для вызова из Addcards
-    public Prosmotrkolod(DBfuncional database, string selectedCategory)
-    {
-        InitializeComponent();
-        db = database;
-        category = selectedCategory;
-        BindingContext = this;
-        Title = $"Карты категории: {category}";
-        LoadCards(); // покажет только выбранную категорию
-    }
+   
+    
 
     private async void LoadCards()
     {
@@ -35,9 +25,6 @@ public partial class Prosmotrkolod : ContentPage
         CardsView.ItemsSource = null; //очищение
         CardsView.ItemsSource = cards; //показ изображения
 
-        var filtered = cards.Where(c => c.CategPicker == category).ToList(); //совпадает ли выбранная карта с выбранной категорией
-
-        CardsView.ItemsSource = filtered;
     }
 
     private async void OnEditClicked(object sender, EventArgs e)
@@ -76,8 +63,32 @@ public partial class Prosmotrkolod : ContentPage
         LoadCards();
     }
 
- 
-private void SaveClicked(object sender, EventArgs e)
+    private async void OnPassCardClicked(object sender, EventArgs e)
+    {
+        var btn = (Button)sender;
+        var card = btn.CommandParameter as Card;
+        if (card == null) return;
+
+        var current = await db.GetCurrentUser();
+        if (current == null)
+        {
+            var users = await db.GetUser();
+            if (users.Count == 0)
+            {
+                await DisplayAlert("Нет пользователя", "Сначала зарегистрируйте пользователя на экране Check.", "OK");
+                return;
+            }
+            var nameToId = users.ToDictionary(u => u.Name, u => u.Id);
+            var picked = await DisplayActionSheet("Кто проходит карту?", "Отмена", null, nameToId.Keys.ToArray());
+            if (string.IsNullOrEmpty(picked) || !nameToId.TryGetValue(picked, out var pickedId)) return;
+            await db.SetCurrentUser(pickedId);
+            current = await db.GetCurrentUser();
+        }
+
+        await db.AddCompletedCard(current.Id, card.Id, score: 1, progress: 100);
+        await DisplayAlert("Сохранено", $"Карта «{card.Title}» добавлена в историю пользователя «{current.Name}».", "OK");
+    }
+    private void SaveClicked(object sender, EventArgs e)
     {
         DBfuncional.SavetoFile(DBfuncional.GetDB);
     }

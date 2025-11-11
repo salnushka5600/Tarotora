@@ -1,166 +1,227 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.Maui.Storage;   // для FileSystem.AppDataDirectory
 
 namespace Tarotora.BD
 {
     public class DBfuncional
     {
+        private static readonly string DbFile = Path.Combine(FileSystem.AppDataDirectory, "tarot_db.json");
 
-        static DBfuncional instance = null;
-        public static DBfuncional GetDB { get { if (instance == null) { instance = new DBfuncional(); ReadFile(instance); } return instance; } }
-        private DBfuncional() { }
-         List<User> users = new List<User>();
-         List<Card> cards = new List<Card>();
-         List<Test> tests = new List<Test>();
-        public static DTOobject ConvertDTO(DBfuncional dBfuncional) 
+        private static DBfuncional _instance;
+        public static DBfuncional GetDB
         {
-           var Out =  new DTOobject();
-            Out.users = dBfuncional.users;
-            Out.cards = dBfuncional.cards;
-            Out.tests = dBfuncional.tests;
-            return Out;
+            get
+            {
+                if (_instance == null)
+                    _instance = ReadFile();
+                return _instance;
+            }
         }
 
-        public static bool SavetoFile (DBfuncional dBfuncional)
-        {
-            var Dto = ConvertDTO(dBfuncional);
-            string jsoon = JsonSerializer.Serialize(Dto);
-            string dir = FileSystem.Current.AppDataDirectory;
+        // ===== ДАННЫЕ =====
+        public List<User> users { get; set; } = new();
+        public List<Card> cards { get; set; } = new();
+        public List<Test> tests { get; set; } = new();
 
-            FileStream Stream = File.Create(dir + "/Taro.txt");
-            byte[] byt = Encoding.UTF8.GetBytes(jsoon);
-            Stream.Write(byt);
-            Stream.Close();
-            return true;
-            
-        }
+        public int userAutoIncrement = 1;
+        public int cardAutoIncrement = 1;
+        public int testAutoIncrement = 1;
 
-        public static bool ReadFile (DBfuncional dBfuncional)
+        public int CurrentUserId { get; private set; } = 0;
+
+        // ===== СЕРИАЛИЗАЦИЯ =====
+        public static void SavetoFile(DBfuncional db)
         {
-            string dir = FileSystem.Current.AppDataDirectory;
-            byte[] byt = File.ReadAllBytes((dir + "/Taro.txt"));
-            if (byt == null) return false;
-            string jsoon = Encoding.UTF8.GetString(byt);
-            DTOobject dbdto;
             try
             {
-                dbdto = JsonSerializer.Deserialize<DTOobject>(jsoon);
+                var dto = new DTOobject
+                {
+                    users = db.users,
+                    cards = db.cards,
+                    tests = db.tests,
+                    userAutoIncrement = db.userAutoIncrement,
+                    cardAutoIncrement = db.cardAutoIncrement,
+                    testAutoIncrement = db.testAutoIncrement,
+                    currentUserId = db.CurrentUserId
+                };
+
+                var json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(DbFile, json);
             }
-            catch (Exception ex) {return false; }
-            dBfuncional.users = dbdto.users;
-            dBfuncional.cards = dbdto.cards;
-            dBfuncional.tests = dbdto.tests;
-            return true;
-        }
-
-        //для пользователей
-        public async Task AddUser(User user) => users.Add(user);
-
-        public async Task UpdateUser(User updated)
-        {
-            var user = users.FirstOrDefault(c => c.Id == updated.Id);
-            if (user != null)
+            catch (Exception ex)
             {
-                user.Subscribe = updated.Subscribe;
-                user.Name = updated.Name;
-                user.IdCard = updated.IdCard;
-                user.Card = updated.Card;
+                Console.WriteLine("Save error: " + ex.Message);
             }
-
         }
 
-        public async Task RemoveUser(int id) => users.RemoveAll(c => c.Id == id);
-        public async Task<List<User>> GetUser() => users;
-        public async Task GetUserId(int id) => users.FirstOrDefault(c => c.Id == id);
-
-
-        //для карт
-
-        public async Task AddCard(Card card) => cards.Add(card);
-
-        public async Task UpdateCard(Card updated)
+        public static DBfuncional ReadFile()
         {
-            var card = cards.FirstOrDefault(c => c.Id == updated.Id);
-            if (card != null)
+            try
             {
-                card.Title = updated.Title;
-                card.Description = updated.Description;
-                card.Subscribe = updated.Subscribe;
-                card.Image = updated.Image;
-                card.CategPicker = updated.CategPicker;
+                if (!File.Exists(DbFile))
+                {
+                    var fresh = new DBfuncional();
+                    SavetoFile(fresh);
+                    return fresh;
+                }
+
+                var json = File.ReadAllText(DbFile);
+                var dto = JsonSerializer.Deserialize<DTOobject>(json) ?? new DTOobject();
+
+                return new DBfuncional
+                {
+                    users = dto.users ?? new List<User>(),
+                    cards = dto.cards ?? new List<Card>(),
+                    tests = dto.tests ?? new List<Test>(),
+                    userAutoIncrement = dto.userAutoIncrement == 0 ? 1 : dto.userAutoIncrement,
+                    cardAutoIncrement = dto.cardAutoIncrement == 0 ? 1 : dto.cardAutoIncrement,
+                    testAutoIncrement = dto.testAutoIncrement == 0 ? 1 : dto.testAutoIncrement,
+                    CurrentUserId = dto.currentUserId
+                };
             }
-
-        }
-
-        public async Task RemoveCard(int id) => cards.RemoveAll(c => c.Id == id);
-        public async Task<List<Card>> GetCard() => cards;
-        public async Task GetCardId(int id) => cards.FirstOrDefault(c => c.Id == id);
-
-
-        public async Task AddTest(Test test) => tests.Add(test);
-
-        public async Task UpdateTest(Test updated)
-        {
-            var test = tests.FirstOrDefault(c => c.Id == updated.Id);
-            if (test != null)
+            catch (Exception ex)
             {
-                test.Score = updated.Score;
-                test.IdUser = updated.IdUser;
-                test.Users = updated.Users;
-                test.IdCard = updated.IdCard;
-                test.Cards = updated.Cards;
-                test.Progress = updated.Progress;
+                Console.WriteLine("Load error: " + ex.Message);
+                return new DBfuncional();
             }
-
         }
 
-        public async Task RemoveTest(int id) => tests.RemoveAll(c => c.Id == id);
-        public async Task<List<Test>> GetTest() => tests;
-        public async Task GetTestId(int id) => tests.FirstOrDefault(c => c.Id == id);
-
-
-        public async Task SeedCards()
+        // ===== USERS =====
+        public async Task<User> RegisterUser(string name, bool subscribe = false)
         {
-            
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Имя не может быть пустым.");
+
+            var user = new User
+            {
+                Id = userAutoIncrement++,
+                Name = name.Trim(),
+                Subscribe = subscribe
+            };
+            users.Add(user);
+            SavetoFile(this);
+            return user;
+        }
+
+        public async Task SetCurrentUser(int userId)
+        {
+            if (!users.Any(u => u.Id == userId))
+                throw new InvalidOperationException("Пользователь не найден.");
+            CurrentUserId = userId;
             SavetoFile(this);
         }
 
+        public async Task<User> GetCurrentUser() => users.FirstOrDefault(u => u.Id == CurrentUserId);
+        public async Task<List<User>> GetUser() => users.ToList();
 
-        public async Task<int> GetUserProgress(int userId)
+        public async Task AddUser(User user)
         {
-            var allCards = await GetCard();
-            var allTests = await GetTest();
-
-            // Считаем, сколько карт прошёл пользователь
-            int viewedCount = allTests.Count(t => t.IdUser == userId);
-
-            if (allCards.Count == 0)
-                return 0;
-
-            int progress = (int)((double)viewedCount / allCards.Count * 100);
-            return progress;
+            if (user.Id == 0) user.Id = userAutoIncrement++;
+            users.Add(user);
+            SavetoFile(this);
         }
 
-        public async Task SeedUsers()
+        public async Task DeleteUser(int id)
         {
-            if (users.Count == 0)
+            var u = users.FirstOrDefault(x => x.Id == id);
+            if (u != null)
             {
-                users.Add(new User { Id = 1, Name = "Алиса", Subscribe = true });
-                users.Add(new User { Id = 2, Name = "Боб", Subscribe = false });
-                users.Add(new User { Id = 3, Name = "Кира", Subscribe = true });
+                users.Remove(u);
+                tests.RemoveAll(t => t.IdUser == id);
+                SavetoFile(this);
             }
+        }
 
-            if (tests.Count == 0)
+        // ===== CARDS =====
+        public async Task AddCard(Card card)
+        {
+            if (card.Id == 0) card.Id = cardAutoIncrement++;
+            cards.Add(card);
+            SavetoFile(this);
+        }
+
+        public async Task<List<Card>> GetAllCards() => cards.ToList();
+
+        // Совместимость: старый код вызывает GetCard(...)
+        public async Task<List<Card>> GetCard(string search = null)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+                return cards.ToList();
+
+            search = search.Trim();
+            return cards
+                .Where(c =>
+                    (c.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (c.Description?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+        }
+
+        public async Task<Card> GetCardById(int id) => cards.FirstOrDefault(c => c.Id == id);
+
+        // Совместимость: старый код вызывает UpdateCard(...)
+        public async Task UpdateCard(Card updated)
+        {
+            if (updated == null) return;
+            var c = cards.FirstOrDefault(x => x.Id == updated.Id);
+            if (c == null) return;
+
+            c.Title = updated.Title;
+            c.Description = updated.Description;
+            c.Image = updated.Image;
+            SavetoFile(this);
+        }
+
+        // Совместимость: старый код вызывает RemoveCard(...)
+        public async Task RemoveCard(int id)
+        {
+            var c = cards.FirstOrDefault(x => x.Id == id);
+            if (c != null)
             {
-                tests.Add(new Test { Id = 1, IdUser = 1, IdCard = 1, Progress = 30 });
-                tests.Add(new Test { Id = 2, IdUser = 2, IdCard = 1, Progress = 70 });
-                tests.Add(new Test { Id = 3, IdUser = 3, IdCard = 1, Progress = 90 });
+                cards.Remove(c);
+                tests.RemoveAll(t => t.IdCard == id);
+                SavetoFile(this);
             }
+        }
+
+        // ===== TESTS / ПРОЙДЕННЫЕ КАРТЫ =====
+        public async Task AddTest(Test test)
+        {
+            if (test.Id == 0) test.Id = testAutoIncrement++;
+            tests.Add(test);
+            SavetoFile(this);
+        }
+
+        public async Task<List<Test>> GetTest() => tests.ToList();
+
+        public async Task AddCompletedCard(int userId, int cardId, int score = 0, int progress = 100)
+        {
+            if (!users.Any(u => u.Id == userId))
+                throw new InvalidOperationException("Пользователь не найден");
+            if (!cards.Any(c => c.Id == cardId))
+                throw new InvalidOperationException("Карта не найдена");
+
+            // не дублируем одну и ту же карту (уберите это, если нужна многократная фиксация)
+            if (tests.Any(t => t.IdUser == userId && t.IdCard == cardId))
+                return;
+
+            await AddTest(new Test
+            {
+                IdUser = userId,
+                IdCard = cardId,
+                Score = score,
+                Progress = progress
+            });
+        }
+
+        public async Task<List<Card>> GetCompletedCardsByUser(int userId)
+        {
+            var cardIds = tests.Where(t => t.IdUser == userId).Select(t => t.IdCard).Distinct().ToList();
+            return cards.Where(c => cardIds.Contains(c.Id)).ToList();
         }
     }
 }

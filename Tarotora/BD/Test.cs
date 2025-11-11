@@ -16,5 +16,7 @@ namespace Tarotora.BD
         public Card Cards { get; set; }
         public int Progress { get; set; }
 
+        public DateTime CompletedAt { get; set; } = DateTime.Now;
+
     }
 }

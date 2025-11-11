@@ -1,74 +1,85 @@
-﻿using Tarotora.BD;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Maui.Controls;
+using Tarotora.BD;
 
-namespace Tarotora;
-
-public partial class Check : ContentPage
+namespace Tarotora
 {
-    private readonly DBfuncional db;
-    private int userId;
-    private List<User> users = new();
-
-    public Check(DBfuncional database)
+    public partial class Check : ContentPage
     {
-        InitializeComponent();
-        db = database;
-        LoadUsers();
-    }
+        private readonly DBfuncional db = DBfuncional.GetDB;
 
-    private async void LoadUsers()
-    {
-        users = await db.GetUser();
-        UsersListView.ItemsSource = users;
-    }
-
-    private async void OnUserSelected(object sender, SelectionChangedEventArgs e) //хранит события
-    {
-        if (e.CurrentSelection.FirstOrDefault() is not User selectedUser) // список выбранных элементов которые хранят события можем выбрать только один первый который подходит под условие
-            return;
-
-        userId = selectedUser.Id;
-
-        var allTests = await db.GetTest();
-        var record = allTests.FirstOrDefault(t => t.IdUser == userId); //первая запись теста которая пренадлежит выбранному пользователю есть пользователь или нет
-        int progress = record?.Progress ?? 0;
-
-        Slider.Value = progress;
-        PercentageLabel.Text = $"{selectedUser.Name} прошёл {progress}% карт";
-    }
-
-    private async void OnRefreshClicked(object sender, EventArgs e)
-    {
-        if (users.Count == 0)
+        public Check(DBfuncional db)
         {
-            await DisplayAlert("Ошибка", "Нет пользователей для обновления", "ОК");
-            return;
+            InitializeComponent();
         }
 
-        var rand = new Random();
-        var tests = await db.GetTest();
-
-        foreach (var test in tests)
+        protected override async void OnAppearing()
         {
-            test.Progress = rand.Next(0, 101);
+            base.OnAppearing();
+            await ReloadUsers();
+            await LoadCompletedForCurrent();
         }
 
-        if (userId != 0)
+        private async Task ReloadUsers()
         {
-            var updated = tests.FirstOrDefault(t => t.IdUser == userId);
-            var currentUser = users.FirstOrDefault(u => u.Id == userId);
+            var users = await db.GetUser();
+            UsersListView.ItemsSource = users;
+        }
 
-            if (updated != null && currentUser != null)
+        private async Task LoadCompletedForCurrent()
+        {
+            var u = await db.GetCurrentUser();
+            if (u == null)
             {
-                Slider.Value = updated.Progress;
-                PercentageLabel.Text = $"{currentUser.Name} прошёл(ла) {updated.Progress}% карт";
+                CompletedCardsView.ItemsSource = null;
+                return;
+            }
+            CompletedCardsView.ItemsSource = await db.GetCompletedCardsByUser(u.Id);
+        }
+
+        private async void OnAddUserClicked(object sender, EventArgs e)
+        {
+            string name = await DisplayPromptAsync("Регистрация", "Введите имя пользователя:");
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            try
+            {
+                var user = await db.RegisterUser(name);
+                await db.SetCurrentUser(user.Id);
+                await ReloadUsers();
+                await LoadCompletedForCurrent();
+                await DisplayAlert("Готово", $"Пользователь «{user.Name}» зарегистрирован и выбран активным.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", ex.Message, "OK");
             }
         }
-        else
+
+        private async void OnMakeActiveClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Подсказка", "Сначала выберите пользователя", "ОК");
+            if (sender is Button btn && btn.CommandParameter is int id)
+            {
+                await db.SetCurrentUser(id);
+                await LoadCompletedForCurrent();
+                var u = await db.GetCurrentUser();
+                await DisplayAlert("Активный пользователь", $"Теперь активен: {u?.Name}", "OK");
+            }
+        }
+
+        private async void OnUserSelected(object sender, SelectionChangedEventArgs e)
+        {
+            var selected = e.CurrentSelection?.FirstOrDefault() as User;
+            if (selected == null)
+            {
+                CompletedCardsView.ItemsSource = null;
+                return;
+            }
+            CompletedCardsView.ItemsSource = await db.GetCompletedCardsByUser(selected.Id);
         }
     }
 }
-
 
 
