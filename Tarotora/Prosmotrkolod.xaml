@@ -8,7 +8,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="12">
 
-            <!-- Кнопка добавления пользователя -->
             <Button Text="Добавить пользователя"
                     BackgroundColor="#0078D4"
                     TextColor="White"
@@ -53,7 +52,6 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Пройденные карты -->
             <Label Text="Пройденные карты выбранного пользователя"
                    FontAttributes="Bold"
                    FontSize="18"

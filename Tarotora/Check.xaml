@@ -1,95 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="Tarotora.Check"
-    Title="Пользователи и история карт">
-
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="12">
-
-            <!-- Кнопка добавления пользователя -->
-            <Button Text="Добавить пользователя"
-                    BackgroundColor="#0078D4"
-                    TextColor="White"
-                    CornerRadius="12"
-                    Clicked="OnAddUserClicked" />
-
-            <!-- Список всех зарегистрированных пользователей -->
-            <Label Text="Список пользователей"
-                   FontAttributes="Bold"
-                   FontSize="18"
-                   TextColor="Black"
-                   Margin="0,10,0,0" />
-
-            <CollectionView x:Name="UsersListView"
-                            SelectionMode="Single"
-                            SelectionChanged="OnUserSelected"
-                            HeightRequest="200">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="Auto,*,Auto"
-                              Padding="6"
-                              BackgroundColor="#f2f2f2"
-                              Margin="0,2"
-                              VerticalOptions="Center">
-                            <Label Text="{Binding Id}" 
-                                   VerticalOptions="Center"
-                                   Margin="0,0,8,0"/>
-                            <Label Grid.Column="1"
-                                   Text="{Binding Name}"
-                                   VerticalOptions="Center"/>
-                            <Button Grid.Column="2"
-                                    Text="Активировать"
-                                    FontSize="12"
-                                    BackgroundColor="#0078D4"
-                                    TextColor="White"
-                                    CornerRadius="10"
-                                    Padding="6,2"
-                                    CommandParameter="{Binding Id}"
-                                    Clicked="OnMakeActiveClicked" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Пройденные карты -->
-            <Label Text="Пройденные карты выбранного пользователя"
-                   FontAttributes="Bold"
-                   FontSize="18"
-                   TextColor="Black"
-                   Margin="0,12,0,4"/>
-
-            <CollectionView x:Name="CompletedCardsView"
-                            SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Padding="8"
-                              ColumnDefinitions="Auto,*"
-                              Margin="0,2"
-                              BackgroundColor="#fafafa">
-                            <Image Source="{Binding Image}"
-                                   WidthRequest="48"
-                                   HeightRequest="48"
-                                   Aspect="AspectFill"
-                                   VerticalOptions="Center"/>
-                            <VerticalStackLayout Grid.Column="1"
-                                                 Padding="8,0,0,0"
-                                                 VerticalOptions="Center">
-                                <Label Text="{Binding Title}"
-                                       FontAttributes="Bold"
-                                       FontSize="16"
-                                       TextColor="Black"/>
-                                <Label Text="{Binding Description}"
-                                       FontSize="12"
-                                       TextColor="Gray"
-                                       LineBreakMode="TailTruncation"/>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Tarotora.Check"
+             Title="Check" Background="LightPink">
+    
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <Label Text="Прогресс пользователей" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black"/>
+        <Label Text="Выберите пользователя" FontSize="18" TextColor="Black" HorizontalOptions="Center" />
+        <CollectionView x:Name="UsersListView" SelectionMode="Single" SelectionChanged="OnUserSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="White" CornerRadius="20" Margin="0,10" HasShadow="True" Padding="15">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="#FFC0CB"/>
+                                        <Setter Property="BorderColor" Value="#FFC0CB"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <HorizontalStackLayout Spacing="15">
+                            <Image Source="user_icon.png" HeightRequest="40" WidthRequest="40"/>
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="20" TextColor="Black"/>
+                                <Label Text="{Binding Subscribe, StringFormat='Подписка: {0}'}" FontSize="14" TextColor="Gray"/>
                             </VerticalStackLayout>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-        </VerticalStackLayout>
-    </ScrollView>
-    </ContentPage>
+                        </HorizontalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label x:Name="PercentageLabel" Text="Выберите пользователя" FontSize="22" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Center" Margin="0,10,0,0"/>
+        <Slider x:Name="Slider" Minimum="0" Maximum="100" Value="0" IsEnabled="False" Margin="0,10,0,0"/>
+        <Button Text="Обновить прогресс" Clicked="OnRefreshClicked" BackgroundColor="HotPink" TextColor="White" CornerRadius="20" FontSize="18" Padding="10,5" Margin="0,20,0,0"/>
+    </VerticalStackLayout>
+</ContentPage>
