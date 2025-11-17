@@ -15,5 +15,8 @@ namespace Tarotora.BD
         public bool Subscribe { get; set; }
         public string Image { get; set; }
 
+        public int Progress { get; set; } = 0; // Progress — это коробочка для числа, которая показывает, насколько что-то выполнено.  В начале там 0, потом можно положить любое другое число.
+
+
     }
 }

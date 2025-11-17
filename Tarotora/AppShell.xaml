@@ -8,8 +8,27 @@
     Title="Tarotora">
 
     <ShellContent
-        Title="Tarotora"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Login"
+        Route="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}" />
+
+    <!-- Меню -->
+    <FlyoutItem Title="Профиль" Route="Main" >
+        <ShellContent Title="Профиль" ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Пройти карту" Route="Check" >
+        <ShellContent Title="Пройти карту" ContentTemplate="{DataTemplate local:Check}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Колода"  Route="ProsmotrKolod">
+        <ShellContent Title="Колода" ContentTemplate="{DataTemplate local:Prosmotrkolod}" />
+    </FlyoutItem>
+
+    <!-- Админские пункты видны только администратору -->
+    <FlyoutItem Title="Админка" Route="Admin" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent Title="Добавить карту" ContentTemplate="{DataTemplate local:Addcards}" />
+        <ShellContent Title="Пользователи" ContentTemplate="{DataTemplate local:DeleteUser}" />
+    </FlyoutItem>
 
 </Shell>
