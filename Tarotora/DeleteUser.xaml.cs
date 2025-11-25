@@ -9,38 +9,38 @@ public partial class DeleteUser : ContentPage
     {
         InitializeComponent();
     }
-    protected async override void OnAppearing() // метод вызывается когда страница отображается
+    protected async override void OnAppearing() 
     {
         base.OnAppearing(); 
 
-        db = await DBfuncional.GetDB(); // получаем объект базы данных (асинхронно)
-        var users = await db.GetUsers(); // получаем список всех пользователей
-        UsersView.ItemsSource = users; // связываем CollectionView с пользователями, чтобы их показать
+        db = await DBfuncional.GetDB(); 
+        var users = await db.GetUsers(); 
+        UsersView.ItemsSource = users; // связываем CollectionView
     }
 
-    private async void OnEditClicked(object sender, EventArgs e) // метод при нажатии кнопки "Редактировать"
+    private async void OnEditClicked(object sender, EventArgs e) 
     {
-        if (sender is Button btn && btn.CommandParameter is User user) // проверяем, что кнопка отправила пользователя
+        if (sender is Button btn && btn.CommandParameter is User user) // кнопка отправила пользователя
         {
-            await Shell.Current.GoToAsync($"EditUser?userId={user.Id}"); // переходим на страницу редактирования пользователя, передаём Id
+            await Shell.Current.GoToAsync($"EditUser?userId={user.Id}"); 
         }
     }
 
-    private async void OnDeleteClicked(object sender, EventArgs e) // метод при нажатии кнопки "Удалить"
+    private async void OnDeleteClicked(object sender, EventArgs e) 
     {
-        if (sender is Button btn && btn.CommandParameter is User user) // проверяем, что кнопка отправила пользователя
+        if (sender is Button btn && btn.CommandParameter is User user) 
         {
-            if (user.IsAdmin) // если пытаются удалить админа
+            if (user.IsAdmin)
             {
-                await DisplayAlert("Ошибка", "Админ не может быть удален", "ОК"); // показываем предупреждение
-                return; // выходим из метода, удалять не будем
+                await DisplayAlert("Ошибка", "Админ не может быть удален", "ОК");
+                return; 
             }
 
-            bool confirm = await DisplayAlert("Удаление", $"Удалить пользователя {user.Name}?", "Да", "Нет"); // спрашиваем подтверждение
-            if (!confirm) return; // если пользователь отказался, выходим
+            bool confirm = await DisplayAlert("Удаление", $"Удалить пользователя {user.Name}?", "Да", "Нет");
+            if (!confirm) return; 
 
-            await db.RemoveUser(user.Id); // удаляем пользователя из базы
-            UsersView.ItemsSource = await db.GetUsers(); // обновляем список пользователей в CollectionView
+            await db.RemoveUser(user.Id);
+            UsersView.ItemsSource = await db.GetUsers(); 
         }
     }
 }

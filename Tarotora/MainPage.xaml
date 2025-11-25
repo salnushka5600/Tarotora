@@ -11,14 +11,11 @@
                     <Label x:Name="UserNameLabel" FontSize="28" FontAttributes="Bold" TextColor="Black"/>
                     <Label x:Name="UserSubscribeLabel" FontSize="16" TextColor="Gray"/>
                     <Label x:Name="UserProgressLabel" FontSize="16" TextColor="Gray"/>
-                    <Button Text="Редактировать профиль"
-                            BackgroundColor="HotPink" TextColor="White"
-                            CornerRadius="20" Clicked="OnEditProfileClicked"/>
+                    <Button Text="Редактировать профиль" BackgroundColor="HotPink" TextColor="White" CornerRadius="20" Clicked="OnEditProfileClicked"/>
+                    <Button Text="Выйти" BackgroundColor="HotPink" TextColor="White" CornerRadius="20" Clicked="Exit"/>
                 </VerticalStackLayout>
             </Frame>
-
             <Label Text="Пройденные карты:" FontSize="20" FontAttributes="Bold" TextColor="Black"/>
-
             <CollectionView x:Name="CompletedCardsView" SelectionMode="None" ItemsLayout="VerticalList">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -28,7 +25,7 @@
                                 <VerticalStackLayout>
                                     <Label Text="{Binding Title}" FontSize="18" TextColor="Black"/>
                                     <Label Text="{Binding Description}" FontSize="14" TextColor="Gray"/>
-                                    <Label Text="{Binding Progress, StringFormat='Пройдено: {0}%'}" FontSize="14" TextColor="Blue"/>
+                                    <Label Text="{Binding Progress, StringFormat='Пройдено: {0}%'}" FontSize="14" TextColor="Black"/>
                                 </VerticalStackLayout>
                             </HorizontalStackLayout>
                         </Frame>

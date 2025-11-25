@@ -12,7 +12,7 @@
         Route="Login"
         ContentTemplate="{DataTemplate local:LoginPage}" />
 
-    <!-- Меню -->
+   
     <FlyoutItem Title="Профиль" Route="Main" >
         <ShellContent Title="Профиль" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>

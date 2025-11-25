@@ -8,47 +8,44 @@ namespace Tarotora;
 
 public partial class Addcards : ContentPage
 {
-    // Переменная для работы с базой данных
+   
     private DBfuncional db;
+    private FileResult? fileResult;
     public Addcards()
     {
         InitializeComponent();
-        InitDB();  // Инициализация базы данных
+        InitDB();  
     }
-    //  Получаем экземпляр базы данных 
+    
     private async void InitDB()
     {
         db = await DBfuncional.GetDB();
     }
 
-    // Кнопка "Показать изображение"
-    private void OnPreviewClicked(object sender, EventArgs e)
-    {
-        string imgPath = ImageEntry.Text; // Берём путь из Entry
-        if (!string.IsNullOrWhiteSpace(imgPath))
-        {
-            PreviewImage.Source = imgPath; // Показываем изображение
-            PreviewImage.IsVisible = true; // Делаем Image видимым
-        }
-        else
-        {
-            DisplayAlert("Ошибка", "Введите путь к изображению (например: fool.png)", "ОК");
-        }
-    }
 
-    //  Кнопка "Сохранить карту" 
+    
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         if (db == null) return; // защита на случай, если база еще не инициализирована
 
-        string title = Titl.Text;        // Название карты
-        string desc = Descrip.Text;      // Описание
-        string img = ImageEntry.Text;    // Путь к изображению
+        string title = Titl.Text;       
+        string desc = Descrip.Text;
+        var img = "";
 
-        // Проверка, что все поля заполнены
-        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(desc) || string.IsNullOrWhiteSpace(img))
+        if (fileResult != null)
         {
-            await DisplayAlert("Ошибка", "Введите категорию, название, описание и изображение карты", "ОК");
+            img = Path.Combine(FileSystem.Current.AppDataDirectory, fileResult.FileName);
+
+            using (var sourceStream = await fileResult.OpenReadAsync())
+            using (var destinationStream = File.Open(img, FileMode.Create))
+            {
+                await sourceStream.CopyToAsync(destinationStream);
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(desc))
+        {
+            await DisplayAlert("Ошибка", "Введите категорию, название, описание", "ОК");
             return;
         }
 
@@ -60,15 +57,38 @@ public partial class Addcards : ContentPage
             Image = img,
         };
 
-        await db.AddCard(currentCard); // Сохраняем карту в базе
+        await db.AddCard(currentCard); 
 
         await DisplayAlert("Сохранено", "Карта успешно добавлена!", "ОК");
 
         // Очищаем поля после сохранения
         Titl.Text = string.Empty;
         Descrip.Text = string.Empty;
-        ImageEntry.Text = string.Empty;
         PreviewImage.Source = null;
         PreviewImage.IsVisible = false;
+    }
+
+
+    private async void LoadImage(object sender, EventArgs e)
+    {
+        var type = new Dictionary<DevicePlatform, IEnumerable<string>>();
+        type[DevicePlatform.WinUI] = new List<string>
+        {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp"
+        };
+        PickOptions pickOptions = new PickOptions();
+        pickOptions.FileTypes = new FilePickerFileType(type);
+        FileResult? fileResult = await FilePicker.Default.PickAsync(pickOptions);
+        if (fileResult != null)
+        {
+            Stream stream = await fileResult.OpenReadAsync();
+            PreviewImage.Source = ImageSource.FromStream(() => stream);
+            this.fileResult = fileResult;
+        }
+        else
+            await DisplayAlert("Ошибка", "Не выбран файл", "Ок");
     }
 }

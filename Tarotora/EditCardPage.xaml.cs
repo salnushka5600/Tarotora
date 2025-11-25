@@ -5,81 +5,105 @@ namespace Tarotora;
 [QueryProperty(nameof(CardId), "cardId")] // позволяет передавать параметр cardId через Shell навигацию
 public partial class EditCardPage : ContentPage
 {
-    private DBfuncional db; // объект базы данных
-    private Card card; // карта, которую редактируем
+    private DBfuncional db; 
+    private Card card;
+    private FileResult? fileResult;
 
     public EditCardPage()
     {
         InitializeComponent();
     }
 
-    private int cardId; // переменная для хранения Id карты
-    public int CardId // свойство для привязки параметра навигации
+    private int cardId; 
+    public int CardId 
     {
         get => cardId;
         set
         {
-            cardId = value; // сохраняем Id
-            _ = LoadCard(); // запускаем метод загрузки карты асинхронно
+            cardId = value; 
+            _ = LoadCard(); 
         }
     }
 
-    private async Task LoadCard() // метод загрузки карты из базы
+    private async Task LoadCard() 
     {
-        db = await DBfuncional.GetDB(); // получаем объект базы данных
-        card = await db.GetCardById(cardId); // получаем карту по Id
+        db = await DBfuncional.GetDB(); 
+        card = await db.GetCardById(cardId);
 
-        if (card != null) // если карта найдена
+        if (card != null) //карта найдена
         {
-            TitleEntry.Text = card.Title; // показываем название
-            DescriptionEditor.Text = card.Description; // описание карты
-            ImageEntry.Text = card.Image; // путь к изображению
-            PreviewImage.Source = card.Image; // показываем изображение
-            PreviewImage.IsVisible = !string.IsNullOrEmpty(card.Image); // делаем видимым только если есть изображение
+            TitleEntry.Text = card.Title; 
+            DescriptionEditor.Text = card.Description; 
+            PreviewImage.Source = card.Image;  
+            PreviewImage.IsVisible = !string.IsNullOrEmpty(card.Image);
         }
-        else // если карта не найдена
+        else //карта не найдена
         {
-            await DisplayAlert("Ошибка", "Карта не найдена", "ОК"); // показываем ошибку
-            await Shell.Current.GoToAsync(".."); // возвращаемся на предыдущую страницу
+            await DisplayAlert("Ошибка", "Карта не найдена", "ОК"); 
+            await Shell.Current.GoToAsync(".."); 
         }
     }
 
-    private void OnPreviewClicked(object sender, EventArgs e) // метод при нажатии кнопки "Показать изображение"
+   
+
+    private async void OnSaveClicked(object sender, EventArgs e) 
     {
-        string imgPath = ImageEntry.Text; // получаем путь из поля
-        if (!string.IsNullOrWhiteSpace(imgPath)) // если что-то введено
-        {
-            PreviewImage.Source = imgPath; // показываем изображение
-            PreviewImage.IsVisible = true; // делаем видимым
-        }
-        else
-        {
-            DisplayAlert("Ошибка", "Введите путь к изображению (например: fool.png)", "ОК"); // предупреждаем
-        }
-    }
+        if (card == null) return; 
 
-    private async void OnSaveClicked(object sender, EventArgs e) // метод при нажатии кнопки "Сохранить"
-    {
-        if (card == null) return; // если карта не загружена, выходим
+        string newTitle = TitleEntry.Text; 
+        string newDesc = DescriptionEditor.Text; 
+       
 
-        string newTitle = TitleEntry.Text; // новое название
-        string newDesc = DescriptionEditor.Text; // новое описание
-        string newImage = ImageEntry.Text; // новый путь к изображению
-
-        if (string.IsNullOrWhiteSpace(newTitle) || string.IsNullOrWhiteSpace(newDesc) || string.IsNullOrWhiteSpace(newImage)) // проверка заполнения
+        if (string.IsNullOrWhiteSpace(newTitle) || string.IsNullOrWhiteSpace(newDesc)) 
         {
-            await DisplayAlert("Ошибка", "Заполните все поля", "ОК"); // предупреждаем
+            await DisplayAlert("Ошибка", "Заполните все поля", "ОК"); 
             return;
         }
 
-        card.Title = newTitle; // обновляем название карты
-        card.Description = newDesc; // обновляем описание
-        card.Image = newImage; // обновляем путь к изображению
+        //обновляем
+        card.Title = newTitle; 
+        card.Description = newDesc;
+       
+        if (fileResult != null)
+        {
+            var img = Path.Combine(FileSystem.Current.AppDataDirectory, fileResult.FileName);
 
-        await db.UpdateCard(card); // сохраняем изменения в базе
+            using (var sourceStream = await fileResult.OpenReadAsync())
+            using (var destinationStream = File.Open(img, FileMode.Create))
+            {
+                await sourceStream.CopyToAsync(destinationStream);
+            }
+            card.Image = img;
+        }
 
-        await DisplayAlert("Сохранено", "Карта успешно обновлена", "ОК"); // показываем сообщение
+        await db.UpdateCard(card); 
 
-        await Shell.Current.GoToAsync(".."); // возвращаемся на предыдущую страницу
+        await DisplayAlert("Сохранено", "Карта успешно обновлена", "ОК"); 
+
+        await Shell.Current.GoToAsync(".."); 
+    }
+
+    private async void LoadImage(object sender, EventArgs e)
+    {
+        var type = new Dictionary<DevicePlatform, IEnumerable<string>>();
+        type[DevicePlatform.WinUI] = new List<string>
+        {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp"
+        };
+        PickOptions pickOptions = new PickOptions();
+        pickOptions.FileTypes = new FilePickerFileType(type);
+        FileResult? fileResult = await FilePicker.Default.PickAsync(pickOptions);
+        if (fileResult != null)
+        {
+            Stream stream = await fileResult.OpenReadAsync();
+            PreviewImage.Source = ImageSource.FromStream(() => stream);
+            this.fileResult = fileResult;
+        }
+        else 
+            await DisplayAlert("Ошибка", "Не выбран файл", "Ок");
+
     }
 }

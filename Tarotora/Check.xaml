@@ -12,6 +12,6 @@
         <Entry x:Name="TitleEntry" Placeholder="Название" BackgroundColor="White" Margin="0,5" TextColor="Black"/>
         <Label Text="Введите ключевые слова описания:" FontSize="18" TextColor="Black" Margin="0,5" />
         <Editor x:Name="KeywordsEditor" Placeholder="Ключевые слова" BackgroundColor="White" HeightRequest="100" TextColor="Black"/>
-        <Button Text="Проверить" BackgroundColor="Green" TextColor="White" CornerRadius="20" Clicked="OnCheckCardClicked"/>
+        <Button Text="Проверить" BackgroundColor="Black" TextColor="White" CornerRadius="20" Clicked="OnCheckCardClicked"/>
     </VerticalStackLayout>
 </ContentPage>

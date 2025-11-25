@@ -8,16 +8,16 @@ using Microsoft.Maui.Storage;
 
 namespace Tarotora.BD
 {
-    //  Класс для сохранения/загрузки данных в JSON 
+   
     public class DBDTO
     {
-        // Список всех пользователей
+        
         public List<User> Users { get; set; } = new();
 
-        // Список всех карт
+       
         public List<Card> Cards { get; set; } = new();
 
-        // Список всех тестов
+        
         public List<Test> Tests { get; set; } = new();
 
         // Счетчики для новых объектов (ID)
@@ -33,7 +33,7 @@ namespace Tarotora.BD
         private static DBfuncional dBfuncional;
 
         // Путь к файлу, где сохраняются данные
-        private static readonly string DbFile = Path.Combine(FileSystem.AppDataDirectory, "tarot_db.json");
+        private static readonly string DbFile = Path.Combine(FileSystem.AppDataDirectory, "tarot_db.json"); //обьединяет массив строк в путь
 
         // Списки пользователей, карт и тестов в памяти
         private List<User> users = new();
@@ -101,7 +101,7 @@ namespace Tarotora.BD
             }
         }
 
-        //  Сохраняем данные в файл 
+        
         public async Task SaveFile()
         {
             try
@@ -135,14 +135,14 @@ namespace Tarotora.BD
             }
         }
 
-        // Удаление пользователя
+        
         public async Task RemoveUser(int id)
         {
             users.RemoveAll(u => u.Id == id);
             await SaveFile();
         }
 
-        // Получение пользователя по ID
+        
         public async Task<User> GetUserById(int id)
         {
             await Task.Delay(1000); // имитация задержки
@@ -186,7 +186,7 @@ namespace Tarotora.BD
 
         //  КАРТЫ 
 
-        // Добавление карты
+      
         public async Task AddCard(Card card)
         {
             card.Id = cardNextId++;
@@ -194,7 +194,7 @@ namespace Tarotora.BD
             await SaveFile();
         }
 
-        // Обновление карты
+        
         public async Task UpdateCard(Card updated)
         {
             var c = cards.FirstOrDefault(x => x.Id == updated.Id);
@@ -207,7 +207,6 @@ namespace Tarotora.BD
             }
         }
 
-        // Удаление карты и связанных с ней тестов
         public async Task RemoveCard(int id)
         {
             cards.RemoveAll(c => c.Id == id);
@@ -215,15 +214,15 @@ namespace Tarotora.BD
             await SaveFile();
         }
 
-        // Получение карты по ID
+      
         public async Task<Card> GetCardById(int id) => cards.FirstOrDefault(c => c.Id == id);
 
-        // Получение всех карт
+        
         public async Task<List<Card>> GetCards() => new List<Card>(cards);
 
         //  ТЕСТЫ 
 
-        // Добавление теста
+       
         public async Task AddTest(Test test)
         {
             test.Id = testNextId++;
@@ -231,7 +230,7 @@ namespace Tarotora.BD
             await SaveFile();
         }
 
-        // Обновление теста
+        
         public async Task UpdateTest(Test updated)
         {
             var t = tests.FirstOrDefault(x => x.Id == updated.Id);

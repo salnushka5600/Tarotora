@@ -7,31 +7,20 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-
-            <Label Text="Редактирование профиля" FontSize="28" FontAttributes="Bold"
-               HorizontalOptions="Center" TextColor="Black"/>
-
+            <Label Text="Редактирование профиля" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black"/>
             <Label Text="Имя:" TextColor="Black" FontSize="18"/>
-            <Entry x:Name="NameEntry" BackgroundColor="White" TextColor="Black"
-               Placeholder="Введите имя" />
-
+            <Entry x:Name="NameEntry" BackgroundColor="White" TextColor="Black" Placeholder="Введите имя" />
             <Label Text="Пароль:" TextColor="Black" FontSize="18"/>
-            <Entry x:Name="PasswordEntry" BackgroundColor="White" TextColor="Black"
-               Placeholder="Введите пароль" IsPassword="True" />
-
+            <Entry x:Name="PasswordEntry" BackgroundColor="White" TextColor="Black" Placeholder="Введите пароль" IsPassword="True" />
             <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                 <Label Text="Подписка:" TextColor="Black" FontSize="18" VerticalOptions="Center"/>
                 <Switch x:Name="SubscribeSwitch"/>
             </HorizontalStackLayout>
-
             <HorizontalStackLayout IsVisible="{Binding IsAdmin}" Spacing="10">
                 <Label Text="Администратор:" TextColor="Black" FontSize="18"/>
                 <Switch x:Name="AdminSwitch"/>
             </HorizontalStackLayout>
-
-            <Button Text="Сохранить" BackgroundColor="HotPink" TextColor="White"
-                CornerRadius="20" Clicked="OnSaveClicked"/>
-
+            <Button Text="Сохранить" BackgroundColor="HotPink" TextColor="White" CornerRadius="20" Clicked="OnSaveClicked"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

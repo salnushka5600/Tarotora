@@ -6,60 +6,60 @@ namespace Tarotora;
 
 public partial class Prosmotrkolod : ContentPage
 {
-    private DBfuncional db; // объект базы
-    private User currentUser; // текущий пользователь
+    private DBfuncional db;
+    private User currentUser; 
 
-    public bool IsAdmin => currentUser?.IsAdmin ?? false; // проверка на админа
+    public bool IsAdmin => currentUser?.IsAdmin ?? false; 
     public Prosmotrkolod()
     {
         InitializeComponent();
         BindingContext = this; // чтобы IsAdmin работал в XAML
     }
 
-    private async Task LoadCards() // метод загрузки карт
+    private async Task LoadCards() 
     {
-        var allCards = await db.GetCards(); // получаем все карты
-        var tests = (await db.GetTests()).Where(t => t.IdUser == currentUser.Id).ToList(); // прогресс текущего пользователя
+        var allCards = await db.GetCards(); 
+        var tests = (await db.GetTests()).Where(t => t.IdUser == currentUser.Id).ToList(); 
 
         foreach (var c in allCards)
         {
-            var test = tests.FirstOrDefault(t => t.IdCard == c.Id); // находим прогресс для карты
-            c.Progress = test?.Progress ?? 0; // записываем прогресс, если есть
+            var test = tests.FirstOrDefault(t => t.IdCard == c.Id); 
+            c.Progress = test?.Progress ?? 0; 
         }
 
-        CardsView.ItemsSource = allCards; // выводим карты в CollectionView
+        CardsView.ItemsSource = allCards; 
     }
 
-    private async void OnEditClicked(object sender, EventArgs e) // кнопка редактирования карты
+    private async void OnEditClicked(object sender, EventArgs e) 
     {
-        if (!IsAdmin) return; // только админ
+        if (!IsAdmin) return;
         if (sender is Button btn && btn.CommandParameter is Card card)
         {
-            await Shell.Current.GoToAsync($"EditCard?cardId={card.Id}"); // переходим на EditCardPage
+            await Shell.Current.GoToAsync($"EditCard?cardId={card.Id}"); 
         }
     }
 
-    private async void OnDeleteClicked(object sender, EventArgs e) // кнопка удаления карты
+    private async void OnDeleteClicked(object sender, EventArgs e) 
     {
-        if (!IsAdmin) return; // только админ
+        if (!IsAdmin) return; 
         if (sender is Button btn && btn.CommandParameter is Card card)
         {
-            bool confirm = await DisplayAlert("Удаление", $"Удалить карту {card.Title}?", "Да", "Нет"); // подтверждение
+            bool confirm = await DisplayAlert("Удаление", $"Удалить карту {card.Title}?", "Да", "Нет"); 
             if (!confirm) return;
 
-            await db.RemoveCard(card.Id); // удаляем карту из базы
-            await LoadCards(); // обновляем CollectionView
+            await db.RemoveCard(card.Id); 
+            await LoadCards(); 
         }
     }
 
     protected async override void OnAppearing() // при отображении страницы
     {
         base.OnAppearing();
-        currentUser = User.GetUser(); // текущий пользователь
+        currentUser = User.GetUser(); 
         if (currentUser == null) return;
 
-        db = await DBfuncional.GetDB(); // объект базы
-        await LoadCards(); // загружаем карты
+        db = await DBfuncional.GetDB();
+        await LoadCards(); 
     }
 
 }

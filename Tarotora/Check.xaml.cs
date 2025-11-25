@@ -8,44 +8,44 @@ namespace Tarotora
 {
     public partial class Check : ContentPage
     {
-        private DBfuncional db;      // переменная для базы данных
-        private Card currentCard;     // карта, которую пользователь проходит сейчас
-        private User currentUser;     // текущий пользователь
+        private DBfuncional db;      
+        private Card currentCard;     
+        private User currentUser;    
         public Check()
         {
             InitializeComponent();
         }
 
-        protected override async void OnAppearing() // метод, который вызывается когда страница отображается
+        protected override async void OnAppearing() 
         {
             base.OnAppearing(); 
 
-            currentUser = User.GetUser(); // получаем текущего пользователя (если он залогинен)
-            if (currentUser == null) return; // если пользователь не залогинен, выходим из метода
+            currentUser = User.GetUser();
+            if (currentUser == null) return; // если пользователь не залогинен, выходим 
 
-            db = await DBfuncional.GetDB(); // получаем объект базы данных (асинхронно)
-            await LoadRandomCard(); // загружаем случайную карту для прохождения
+            db = await DBfuncional.GetDB(); 
+            await LoadRandomCard(); 
         }
 
 
 
-        //  Загружаем случайную карту 
+        
         private async Task LoadRandomCard()
         {
-            var allCards = await db.GetCards(); // получаем все карты из базы
-            var tests = (await db.GetTests()) // получаем все тесты
-                        .Where(t => t.IdUser == currentUser.Id) // оставляем только тесты текущего пользователя
-                        .ToDictionary(t => t.IdCard, t => t.Progress); // превращаем в словарь: Id карты → прогресс
+            var allCards = await db.GetCards();
+            var tests = (await db.GetTests()) 
+                        .Where(t => t.IdUser == currentUser.Id) 
+                        .ToDictionary(t => t.IdCard, t => t.Progress); 
 
-            var rand = new Random(); // создаём генератор случайных чисел
-            currentCard = allCards[rand.Next(allCards.Count)]; // выбираем случайную карту из списка
+            var rand = new Random(); 
+            currentCard = allCards[rand.Next(allCards.Count)]; 
 
-            CardTitleLabel.Text = "Угадайте карту!"; // показываем подсказку пользователю
-            CardImage.Source = currentCard.Image; // показываем изображение карты
-            TitleEntry.Text = string.Empty; // очищаем поле для ввода названия карты
-            KeywordsEditor.Text = string.Empty; // очищаем поле для ввода ключевых слов
+            CardTitleLabel.Text = "Угадайте карту!"; 
+            CardImage.Source = currentCard.Image; 
+            TitleEntry.Text = string.Empty; 
+            KeywordsEditor.Text = string.Empty; 
 
-            // Если карта уже частично пройдена, показываем прогресс
+            
             if (tests.TryGetValue(currentCard.Id, out int prevProgress) && prevProgress > 0)
             {
                 await DisplayAlert("Информация", $"Эта карта уже частично пройдена: {prevProgress}%", "OK");
@@ -53,63 +53,63 @@ namespace Tarotora
         }
 
 
-        // Кнопка проверить
+       
         private async void OnCheckCardClicked(object sender, EventArgs e)
         {
-            if (currentCard == null) return; // если карта не загружена, выходим
+            if (currentCard == null) return; 
 
             string enteredTitle = TitleEntry.Text?.Trim() ?? ""; // получаем название карты, введённое пользователем, убираем пробелы
             string enteredKeywords = KeywordsEditor.Text?.Trim() ?? ""; // получаем ключевые слова, убираем пробелы
 
-            // если пользователь ничего не ввёл
+          
             if (string.IsNullOrWhiteSpace(enteredTitle) && string.IsNullOrWhiteSpace(enteredKeywords))
             {
-                await DisplayAlert("Ошибка", "Введите хотя бы название или ключевые слова", "OK"); // показываем ошибку
+                await DisplayAlert("Ошибка", "Введите хотя бы название или ключевые слова", "OK"); 
                 return;
             }
 
-            int progress = 0; // переменная для подсчёта прогресса
+            int progress = 0; 
 
-            // если название карты угадано правильно, даём 50% прогресса
+            
             if (!string.IsNullOrEmpty(enteredTitle) && string.Equals(enteredTitle, currentCard.Title, StringComparison.OrdinalIgnoreCase))
                 progress += 50;
 
 
-            var keywords = currentCard.Description.Split(' ', StringSplitOptions.RemoveEmptyEntries); // разбиваем описание карты на слова
+            var keywords = currentCard.Description.Split(' ', StringSplitOptions.RemoveEmptyEntries); 
             if (!string.IsNullOrWhiteSpace(enteredKeywords)) // если пользователь ввёл ключевые слова
             {
                 var enteredWords = enteredKeywords.Split(' ', StringSplitOptions.RemoveEmptyEntries); // разбиваем на слова
                 int matched = keywords.Count(k => enteredWords.Any(ew => ew.Equals(k, StringComparison.OrdinalIgnoreCase))); // считаем совпадения
-                progress += (int)(50.0 * matched / keywords.Length); // добавляем прогресс пропорционально угаданным словам
+                progress += (int)(50.0 * matched / keywords.Length); 
             }
 
-            var tests = await db.GetTests(); // получаем все тесты
-            var test = tests.FirstOrDefault(t => t.IdUser == currentUser.Id && t.IdCard == currentCard.Id); // ищем тест текущего пользователя для этой карты
+            var tests = await db.GetTests(); 
+            var test = tests.FirstOrDefault(t => t.IdUser == currentUser.Id && t.IdCard == currentCard.Id); //тест текущего пользователя для этой карты
 
-            if (test == null) // если теста ещё нет
+            if (test == null) // теста нет
             {
-                test = new Test // создаём новый тест
+                test = new Test 
                 {
-                    IdUser = currentUser.Id, // пользователь
-                    IdCard = currentCard.Id, // карта
-                    Progress = progress, // прогресс
-                    CompletedAt = DateTime.Now // время прохождения
+                    IdUser = currentUser.Id, 
+                    IdCard = currentCard.Id, 
+                    Progress = progress, 
+                    CompletedAt = DateTime.Now 
                 };
-                await db.AddTest(test); // сохраняем в базе
+                await db.AddTest(test); 
             }
-            else // если тест уже есть
+            else //тест есть
             {
                 if (progress > test.Progress) // если прогресс стал больше
                 {
-                    test.Progress = progress; // обновляем прогресс
-                    test.CompletedAt = DateTime.Now; // обновляем дату прохождения
-                    await db.UpdateTest(test); // сохраняем изменения в базе
+                    test.Progress = progress; // обновление
+                    test.CompletedAt = DateTime.Now; // обновление 
+                    await db.UpdateTest(test);
                 }
             }
 
-            await DisplayAlert("Результат", $"Вы прошли карту на {progress}%", "OK"); // показываем результат
+            await DisplayAlert("Результат", $"Вы прошли карту на {progress}%", "OK");
 
-            await LoadRandomCard(); // загружаем следующую карту
+            await LoadRandomCard();
         }
         
     }

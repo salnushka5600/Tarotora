@@ -5,7 +5,7 @@ namespace Tarotora
 {
     public partial class AppShell : Shell
     {
-        public DBfuncional db; // база данных для всего приложения
+        public DBfuncional db; 
 
         public AppShell()
         {
@@ -18,7 +18,7 @@ namespace Tarotora
                 await db.InitDB(); // создаём дефолтные данные (админ, стартовые карты)
             });
 
-            // Регистрация маршрутов для навигации
+           
             Routing.RegisterRoute("Registre", typeof(RegistrationPage));
             Routing.RegisterRoute("Login", typeof(LoginPage));
             Routing.RegisterRoute("Main", typeof(MainPage));
@@ -29,15 +29,15 @@ namespace Tarotora
             Routing.RegisterRoute("DeleteUsers", typeof(DeleteUser));
             Routing.RegisterRoute("EditUser", typeof(EditUserPage));
 
-            Navigating += OnShellNavigating; // событие перед навигацией
+            Navigating += OnShellNavigating; 
         }
 
 
-        //  Срабатывает при открытии Shell 
+        
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            UpdateMenu(); // обновляем меню в зависимости от пользователя
+            UpdateMenu(); 
         }
 
 
@@ -47,7 +47,7 @@ namespace Tarotora
             // Игнорируем обратную навигацию
             if (e.Target.Location.OriginalString == null) return;
 
-            var user = User.GetUser(); // получаем текущего пользователя
+            var user = User.GetUser(); 
 
             // Если пользователь не залогинен и пытается перейти на любую страницу кроме Login или Registration, перенаправляем на Login
             if (user == null &&
@@ -55,20 +55,20 @@ namespace Tarotora
                 !e.Target.Location.OriginalString.Contains("Registre"))
             {
                 e.Cancel(); // отменяем навигацию
-                Shell.Current.GoToAsync("//Login"); // отправляем на LoginPage
+                Shell.Current.GoToAsync("///Login"); // отправляем на LoginPage
             }
         }
 
         //   Обновляем меню в зависимости от пользователя
-        public void UpdateMenu() // UpdateMenu — формирует меню слева, показывает разные пункты для обычных пользователей и админов.
+        public void UpdateMenu() 
         {
-            Items.Clear(); // очищаем старое меню
+            Items.Clear(); 
 
-            var user = User.GetUser(); // текущий пользователь
+            var user = User.GetUser(); 
 
             if (user == null)
             {
-                // если никто не вошёл, показываем только Login
+                
                 Items.Add(new ShellContent { Title = "Login", Route = "Login", ContentTemplate = new DataTemplate(typeof(LoginPage)) });
                 return;
             }

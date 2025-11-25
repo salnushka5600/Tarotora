@@ -5,72 +5,70 @@ namespace Tarotora;
 [QueryProperty(nameof(UserId), "userId")] // позволяет получать параметр userId через Shell навигацию
 public partial class EditUserPage : ContentPage
 {
-    private DBfuncional db; // объект для работы с базой
-    private User currentUser; // текущий вошедший пользователь
-    private User editedUser; // пользователь, которого редактируем
+    private DBfuncional db; 
+    private User currentUser; 
+    private User editedUser; 
 
     public EditUserPage()
     {
         InitializeComponent();
-        // устанавливаем контекст данных для XAML (чтобы IsAdmin работал)
+        //контекст данных для XAML (чтобы IsAdmin работал)
         BindingContext = this;
     }
 
-    private int userId; // переменная для хранения Id редактируемого пользователя
-    public int UserId // свойство для привязки параметра навигации
+    private int userId; 
+    public int UserId 
     {
         get => userId;
         set
         {
-            userId = value; // сохраняем Id
-            _ = LoadUser(); // загружаем пользователя асинхронно
+            userId = value; 
+            _ = LoadUser(); 
         }
     }
 
-    public bool IsAdmin => User.GetUser()?.IsAdmin ?? false; // проверка, является ли текущий пользователь админом
+    public bool IsAdmin => User.GetUser()?.IsAdmin ?? false; // является ли текущий пользователь админом
 
-    private async Task LoadUser() // метод загрузки пользователя из базы
+    private async Task LoadUser() 
     {
-        currentUser = User.GetUser(); // получаем текущего пользователя
-        db = await DBfuncional.GetDB(); // инициализируем объект базы данных
+        currentUser = User.GetUser(); 
+        db = await DBfuncional.GetDB();
 
-        editedUser = await db.GetUserById(UserId); // загружаем пользователя, которого редактируем
+        editedUser = await db.GetUserById(UserId); 
 
-        if (editedUser == null) // если пользователь не найден
+        if (editedUser == null) 
         {
-            await DisplayAlert("Ошибка", "Пользователь не найден", "OK"); // показываем предупреждение
-            await Shell.Current.GoToAsync(".."); // возвращаемся на предыдущую страницу
+            await DisplayAlert("Ошибка", "Пользователь не найден", "OK"); 
+            await Shell.Current.GoToAsync(".."); 
             return;
         }
 
-        NameEntry.Text = editedUser.Name; // показываем имя
-        PasswordEntry.Text = editedUser.Password; // показываем пароль
-        SubscribeSwitch.IsToggled = editedUser.Subscribe; // показываем подписку
-
-        AdminSwitch.IsToggled = editedUser.IsAdmin; // показываем роль админа
-        AdminSwitch.IsEnabled = IsAdmin && (editedUser.Id != currentUser.Id); // редактировать роль может только админ и не самого себя
-
-        SubscribeSwitch.IsEnabled = IsAdmin || editedUser.Id == currentUser.Id; // подписку можно менять админу или самому себе
+        NameEntry.Text = editedUser.Name; 
+        PasswordEntry.Text = editedUser.Password; 
+        SubscribeSwitch.IsToggled = editedUser.Subscribe; 
+        AdminSwitch.IsToggled = editedUser.IsAdmin; 
+        AdminSwitch.IsEnabled = IsAdmin && (editedUser.Id != currentUser.Id); 
+        SubscribeSwitch.IsEnabled = IsAdmin || editedUser.Id == currentUser.Id; 
     }
 
-    private async void OnSaveClicked(object sender, EventArgs e) // метод при нажатии кнопки "Сохранить"
+    private async void OnSaveClicked(object sender, EventArgs e) 
     {
-        if (editedUser == null) return; // если нет загруженного пользователя, выходим
+        if (editedUser == null) return; 
 
-        editedUser.Name = NameEntry.Text; // сохраняем новое имя
-        editedUser.Password = PasswordEntry.Text; // сохраняем новый пароль
-        editedUser.Subscribe = SubscribeSwitch.IsToggled; // сохраняем подписку
+        editedUser.Name = NameEntry.Text; 
+        editedUser.Password = PasswordEntry.Text; 
+        editedUser.Subscribe = SubscribeSwitch.IsToggled; 
 
-        if (IsAdmin) // админ может менять роль других
+        if (IsAdmin) 
             editedUser.IsAdmin = AdminSwitch.IsToggled;
 
-        await db.UpdateUser(editedUser); // сохраняем изменения в базе
+        await db.UpdateUser(editedUser); 
 
-        if (currentUser.Id == editedUser.Id) // если редактируем самого себя
-            User.PostUser(editedUser); // обновляем текущего пользователя
+        if (currentUser.Id == editedUser.Id) 
+            User.PostUser(editedUser); 
 
-        await DisplayAlert("Успех", "Профиль обновлён", "OK"); // показываем уведомление
-        await Shell.Current.GoToAsync(".."); // возвращаемся на предыдущую страницу
+        await DisplayAlert("Успешно", "Профиль обновлён", "OK"); 
+        await Shell.Current.GoToAsync(".."); 
     }
 
 }

@@ -9,33 +9,33 @@ public partial class LoginPage : ContentPage
 		InitializeComponent();
 	}
 
-    private async void Login(object sender, EventArgs e) // метод при нажатии кнопки "Войти"
+    private async void Login(object sender, EventArgs e) 
     {
-        string login = LoginEntry.Text; // получаем логин
-        string password = PasswordEntry.Text; // получаем пароль
+        string login = LoginEntry.Text; 
+        string password = PasswordEntry.Text; 
 
-        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) // проверка заполнения
+        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) 
         {
-            await DisplayAlert("Ошибка", "Введите логин и пароль", "ОК"); // предупреждаем
+            await DisplayAlert("Ошибка", "Введите логин и пароль", "ОК"); 
             return;
         }
 
-        var dbLocal = await DBfuncional.GetDB(); // получаем объект базы
-        var user = await dbLocal.Authenticate(login, password); // проверяем логин и пароль
-        if (user != null) // если пользователь найден
+        var dbLocal = await DBfuncional.GetDB(); 
+        var user = await dbLocal.Authenticate(login, password); 
+        if (user != null) 
         {
-            User.PostUser(user); // сохраняем текущего пользователя
-            ((AppShell)Shell.Current).UpdateMenu(); // обновляем меню под текущего пользователя
-            await Shell.Current.GoToAsync("Main"); // переходим на MainPage
+            User.PostUser(user); 
+            ((AppShell)Shell.Current).UpdateMenu();
+            await Shell.Current.GoToAsync("Main"); 
         }
-        else // если не найден
+        else
         {
-            await DisplayAlert("Ошибка", "Неверный логин или пароль", "ОК"); // предупреждаем
+            await DisplayAlert("Ошибка", "Неверный логин или пароль", "ОК"); 
         }
     }
 
-    private async void Registration(object sender, EventArgs e) // метод при нажатии "Регистрация"
+    private async void Registration(object sender, EventArgs e) 
     {
-        await Shell.Current.GoToAsync("Registre"); // переход на RegistrationPage
+        await Shell.Current.GoToAsync("Registre"); 
     }
 }

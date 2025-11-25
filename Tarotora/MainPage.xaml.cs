@@ -60,6 +60,13 @@ namespace Tarotora
         {
             await Shell.Current.GoToAsync($"EditUser?userId={currentUser.Id}"); // переходим на EditUserPage
         }
+
+        private async void Exit(object sender, EventArgs e)
+        {
+            currentUser = null;
+            User.PostUser(null);
+            await Shell.Current.GoToAsync("Login");
+        }
     }
 }
 

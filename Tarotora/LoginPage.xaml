@@ -7,15 +7,11 @@
     <ScrollView>
 
         <VerticalStackLayout Spacing="20" Padding="30" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" WidthRequest="350">
-
             <Label Text="Вход в систему" FontSize="28" HorizontalOptions="Center" FontAttributes="Bold"/>
-
             <Entry x:Name="LoginEntry" Placeholder="Логин"/>
             <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True"/>
-
             <Button Text="Войти" Clicked="Login"/>
             <Button Text="Регистрация" Clicked="Registration"/>
-
         </VerticalStackLayout>
 
     </ScrollView>
