@@ -6,7 +6,15 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
             <Label Text="Добавление карты" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black" />
-           
+            <Label x:Name="view" Text="Выберите вид карт" FontSize="20"/>
+            <Picker x:Name="Choice" Title="Вид карт" SelectedItem="Choices">
+                <Picker.Items>
+                    <x:String>Универсальный</x:String>
+                    <x:String>ТемныеиСветлые</x:String>
+                    <x:String>Специализированные</x:String>
+                    <x:String>Авторские</x:String>
+                </Picker.Items>
+            </Picker>
             
             <Entry x:Name="Titl" Placeholder="Название карты" FontSize="18" BackgroundColor="White" TextColor="Black" Margin="0,10,0,0"/>
             <Editor x:Name="Descrip" Placeholder="Описание карты" FontSize="16" BackgroundColor="White" TextColor="Black" AutoSize="TextChanges" HeightRequest="120" />

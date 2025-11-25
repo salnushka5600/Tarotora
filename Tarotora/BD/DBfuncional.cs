@@ -23,7 +23,7 @@ namespace Tarotora.BD
             }
         }
 
-        // ===== ДАННЫЕ =====
+       
         public List<User> users { get; set; } = new();
         public List<Card> cards { get; set; } = new();
         public List<Test> tests { get; set; } = new();
@@ -34,7 +34,7 @@ namespace Tarotora.BD
 
         public int CurrentUserId { get; private set; } = 0;
 
-        // ===== СЕРИАЛИЗАЦИЯ =====
+        
         public static void SavetoFile(DBfuncional db)
         {
             try
@@ -91,7 +91,7 @@ namespace Tarotora.BD
             }
         }
 
-        // ===== USERS =====
+       
         public async Task<User> RegisterUser(string name, bool subscribe = false)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -121,7 +121,9 @@ namespace Tarotora.BD
 
         public async Task AddUser(User user)
         {
+            new User();
             if (user.Id == 0) user.Id = userAutoIncrement++;
+
             users.Add(user);
             SavetoFile(this);
         }
@@ -137,9 +139,10 @@ namespace Tarotora.BD
             }
         }
 
-        // ===== CARDS =====
+       
         public async Task AddCard(Card card)
         {
+            new Card();
             if (card.Id == 0) card.Id = cardAutoIncrement++;
             cards.Add(card);
             SavetoFile(this);
@@ -147,7 +150,7 @@ namespace Tarotora.BD
 
         public async Task<List<Card>> GetAllCards() => cards.ToList();
 
-        // Совместимость: старый код вызывает GetCard(...)
+       
         public async Task<List<Card>> GetCard(string search = null)
         {
             if (string.IsNullOrWhiteSpace(search))
@@ -161,9 +164,9 @@ namespace Tarotora.BD
                 .ToList();
         }
 
-        public async Task<Card> GetCardById(int id) => cards.FirstOrDefault(c => c.Id == id);
+        public async Task<Card> GetCardById(int id) => cards.FirstOrDefault(c => c.Id == id); // новую карту  cards.FirstOrDefault(c => c.Id == id)
 
-        // Совместимость: старый код вызывает UpdateCard(...)
+
         public async Task UpdateCard(Card updated)
         {
             if (updated == null) return;
@@ -176,7 +179,7 @@ namespace Tarotora.BD
             SavetoFile(this);
         }
 
-        // Совместимость: старый код вызывает RemoveCard(...)
+        
         public async Task RemoveCard(int id)
         {
             var c = cards.FirstOrDefault(x => x.Id == id);
@@ -188,7 +191,7 @@ namespace Tarotora.BD
             }
         }
 
-        // ===== TESTS / ПРОЙДЕННЫЕ КАРТЫ =====
+        //ПРОЙДЕННЫЕ КАРТЫ 
         public async Task AddTest(Test test)
         {
             if (test.Id == 0) test.Id = testAutoIncrement++;
@@ -205,7 +208,7 @@ namespace Tarotora.BD
             if (!cards.Any(c => c.Id == cardId))
                 throw new InvalidOperationException("Карта не найдена");
 
-            // не дублируем одну и ту же карту (уберите это, если нужна многократная фиксация)
+            // не дублируем одну и ту же карту 
             if (tests.Any(t => t.IdUser == userId && t.IdCard == cardId))
                 return;
 

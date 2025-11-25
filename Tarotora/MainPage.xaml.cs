@@ -22,10 +22,10 @@ namespace Tarotora
             await Navigation.PushAsync(new Prosmotrkolod(db));
         }
 
-        //private async void Check(object sender, EventArgs e)
-        //{
-        //    await Navigation.PushAsync(new Check(db));
-        //}
+        private async void Check(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new Check());
+        }
     }
 
 }
