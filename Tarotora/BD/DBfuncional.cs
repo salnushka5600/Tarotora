@@ -2,18 +2,102 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Tarotora.BD
 {
     public class DBfuncional
     {
-        List<User> users = new();
-        List<Card> cards = new();
-        List<Test> tests = new();
+        private static readonly string DbFile = Path.Combine(FileSystem.AppDataDirectory, "tarot_db.json");
 
-        //для пользователей
-        public async Task AddUser(User user) => users.Add(user);
+        private static DBfuncional _instance;
+        public static DBfuncional GetDB
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = ReadFile();
+                    _instance.SeedCards();
+                    _instance.SeedUsers();
+                }
+                return _instance;
+            }
+        }
+        public List<User> users { get; set; } = new();
+        public List<Card> cards { get; set; } = new();
+        public List<Test> tests { get; set; } = new();
+
+        public int userAutoIncrement = 0;
+        public int cardAutoIncrement = 0;
+        public int testAutoIncrement = 0;
+
+        public int CurrentUserId { get; private set; } = 0;
+
+        public static void SavetoFile(DBfuncional db)
+        {
+            try
+            {
+                var dto = new DTOobject
+                {
+                    users = db.users,
+                    cards = db.cards,
+                    tests = db.tests,
+                    userAutoIncrement = db.userAutoIncrement,
+                    cardAutoIncrement = db.cardAutoIncrement,
+                    testAutoIncrement = db.testAutoIncrement,
+                    currentUserId = db.CurrentUserId
+                };
+
+                var json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(DbFile, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Save error: " + ex.Message);
+            }
+        }
+
+        public static DBfuncional ReadFile()
+        {
+            try
+            {
+                if (!File.Exists(DbFile))
+                {
+                    var fresh = new DBfuncional();
+                    SavetoFile(fresh);
+                    return fresh;
+                }
+
+                var json = File.ReadAllText(DbFile);
+                var dto = JsonSerializer.Deserialize<DTOobject>(json) ?? new DTOobject();
+
+                return new DBfuncional
+                {
+                    users = dto.users ?? new List<User>(),
+                    cards = dto.cards ?? new List<Card>(),
+                    tests = dto.tests ?? new List<Test>(),
+                    userAutoIncrement = dto.userAutoIncrement == 0 ? 1 : dto.userAutoIncrement,
+                    cardAutoIncrement = dto.cardAutoIncrement == 0 ? 1 : dto.cardAutoIncrement,
+                    testAutoIncrement = dto.testAutoIncrement == 0 ? 1 : dto.testAutoIncrement,
+                    CurrentUserId = dto.currentUserId
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Load error: " + ex.Message);
+                return new DBfuncional();
+            }
+        }
+        public async Task AddUser(User user)
+        {
+            new User();
+            if (user.Id == 0) user.Id = userAutoIncrement++;
+
+            users.Add(user);
+            SavetoFile(this);
+        }
 
         public async Task UpdateUser(User updated)
         {
@@ -25,10 +109,20 @@ namespace Tarotora.BD
                 user.IdCard = updated.IdCard;
                 user.Card = updated.Card;
             }
-
+            SavetoFile(this);
         }
 
-        public async Task RemoveUser(int id) => users.RemoveAll(c => c.Id == id);
+        public async Task RemoveUser(int id)
+        {
+            var u = users.FirstOrDefault(x => x.Id == id);
+            if (u != null)
+            {
+                users.Remove(u);
+                tests.RemoveAll(t => t.IdUser == id);
+                SavetoFile(this);
+            }
+        }
+
         public async Task<List<User>> GetUser() => users;
         public async Task GetUserId(int id) => users.FirstOrDefault(c => c.Id == id);
 
@@ -37,7 +131,13 @@ namespace Tarotora.BD
 
 
 
-        public async Task AddCard(Card card) => cards.Add(card);
+        public async Task AddCard(Card card)
+        {
+            new Card();
+            if (card.Id == 0) card.Id = cardAutoIncrement++;
+            cards.Add(card);
+            SavetoFile(this);
+        }
 
         public async Task UpdateCard(Card updated)
         {
@@ -49,15 +149,29 @@ namespace Tarotora.BD
                 card.Subscribe = updated.Subscribe;
                 card.Image = updated.Image;
             }
-
+            SavetoFile(this);
         }
 
-        public async Task RemoveCard(int id) => cards.RemoveAll(c => c.Id == id);
+        public async Task RemoveCard(int id)
+        {
+            var c = cards.FirstOrDefault(x => x.Id == id);
+            if (c != null)
+            {
+                cards.Remove(c);
+                tests.RemoveAll(t => t.IdCard == id);
+            }
+            SavetoFile(this);
+        }
         public async Task<List<Card>> GetCard() => cards;
         public async Task GetCardId(int id) => cards.FirstOrDefault(c => c.Id == id);
 
 
-        public async Task AddTest(Test test) => tests.Add(test);
+        public async Task AddTest(Test test)
+        {
+            if (test.Id == 0) test.Id = testAutoIncrement++;
+            tests.Add(test);
+            SavetoFile(this);
+        }
 
         public async Task UpdateTest(Test updated)
         {
@@ -71,7 +185,7 @@ namespace Tarotora.BD
                 test.Cards = updated.Cards;
                 test.Progress = updated.Progress;
             }
-
+            SavetoFile(this);
         }
 
         public async Task RemoveTest(int id) => tests.RemoveAll(c => c.Id == id);
