@@ -11,11 +11,11 @@ namespace Tarotora
         {
             InitializeComponent();
 
-            // Инициализация базы асинхронно через Task.Run
+            
             Task.Run(async () =>
             {
                 db = await DBfuncional.GetDB();
-                await db.InitDB(); // создаём дефолтные данные (админ, стартовые карты)
+                await db.InitDB(); // создание
             });
 
            
@@ -41,25 +41,22 @@ namespace Tarotora
         }
 
 
-        //  Проверка перед навигацией
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
-            // Игнорируем обратную навигацию
             if (e.Target.Location.OriginalString == null) return;
 
             var user = User.GetUser(); 
 
-            // Если пользователь не залогинен и пытается перейти на любую страницу кроме Login или Registration, перенаправляем на Login
             if (user == null &&
                 !e.Target.Location.OriginalString.Contains("Login") &&
                 !e.Target.Location.OriginalString.Contains("Registre"))
             {
-                e.Cancel(); // отменяем навигацию
-                Shell.Current.GoToAsync("///Login"); // отправляем на LoginPage
+                e.Cancel(); 
+                Shell.Current.GoToAsync("///Login"); 
             }
         }
 
-        //   Обновляем меню в зависимости от пользователя
+       
         public void UpdateMenu() 
         {
             Items.Clear(); 
@@ -68,17 +65,16 @@ namespace Tarotora
 
             if (user == null)
             {
-                
                 Items.Add(new ShellContent { Title = "Login", Route = "Login", ContentTemplate = new DataTemplate(typeof(LoginPage)) });
                 return;
             }
 
-            // Общие пункты для всех пользователей
+            // МЕНЮШКА
             Items.Add(new FlyoutItem { Title = "Профиль", Items = { new ShellContent { Title = "Профиль", ContentTemplate = new DataTemplate(typeof(MainPage)) } } });
             Items.Add(new FlyoutItem { Title = "Пройти карту", Items = { new ShellContent { Title = "Пройти карту", ContentTemplate = new DataTemplate(typeof(Check)) } } });
             Items.Add(new FlyoutItem { Title = "Колода", Items = { new ShellContent { Title = "Колода", ContentTemplate = new DataTemplate(typeof(Prosmotrkolod)) } } });
 
-            // Админские пункты видны только администратору
+           
             if (user.IsAdmin)
             {
                 Items.Add(new FlyoutItem

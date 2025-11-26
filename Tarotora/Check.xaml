@@ -4,14 +4,16 @@
              x:Class="Tarotora.Check"
              Title="Прохождение карты"
              Background="LightPink">
-
-    <VerticalStackLayout Padding="20" Spacing="20">
-        <Label x:Name="CardTitleLabel" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black"/>
-        <Image x:Name="CardImage" HeightRequest="250" Aspect="AspectFit" HorizontalOptions="Fill"/>
-        <Label Text="Введите название карты:" FontSize="18" TextColor="Black"/>
-        <Entry x:Name="TitleEntry" Placeholder="Название" BackgroundColor="White" Margin="0,5" TextColor="Black"/>
-        <Label Text="Введите ключевые слова описания:" FontSize="18" TextColor="Black" Margin="0,5" />
-        <Editor x:Name="KeywordsEditor" Placeholder="Ключевые слова" BackgroundColor="White" HeightRequest="100" TextColor="Black"/>
-        <Button Text="Проверить" BackgroundColor="Black" TextColor="White" CornerRadius="20" Clicked="OnCheckCardClicked"/>
-    </VerticalStackLayout>
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label x:Name="CardTitleLabel" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black"/>
+            <Image x:Name="CardImage" HeightRequest="250" Aspect="AspectFit" HorizontalOptions="Fill"/>
+            <Label Text="Введите название карты:" FontSize="18" TextColor="Black"/>
+            <Entry x:Name="TitleEntry" Placeholder="Название" BackgroundColor="White" Margin="0,5" TextColor="Black"/>
+            <Label Text="Введите ключевые слова описания:" FontSize="18" TextColor="Black" Margin="0,5" />
+            <Editor x:Name="KeywordsEditor" Placeholder="Ключевые слова" BackgroundColor="White" HeightRequest="100" TextColor="Black"/>
+            <Button Text="Проверить" BackgroundColor="Black" TextColor="White" CornerRadius="20" Clicked="OnCheckCardClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

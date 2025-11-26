@@ -1,4 +1,3 @@
-//using Microsoft.UI.Xaml.Controls.Primitives;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
@@ -26,7 +25,6 @@ public partial class Addcards : ContentPage
     
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        if (db == null) return; // защита на случай, если база еще не инициализирована
 
         string title = Titl.Text;       
         string desc = Descrip.Text;
@@ -36,20 +34,20 @@ public partial class Addcards : ContentPage
         {
             img = Path.Combine(FileSystem.Current.AppDataDirectory, fileResult.FileName);
 
-            using (var sourceStream = await fileResult.OpenReadAsync())
-            using (var destinationStream = File.Open(img, FileMode.Create))
+            using (var sourceStream = await fileResult.OpenReadAsync()) //для чтения
+            using (var destinationStream = File.Open(img, FileMode.Create)) // открываем файл по нашему пути
             {
-                await sourceStream.CopyToAsync(destinationStream);
+                await sourceStream.CopyToAsync(destinationStream); //содержимое передало в файл приложения
             }
         }
 
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(desc))
         {
-            await DisplayAlert("Ошибка", "Введите категорию, название, описание", "ОК");
+            await DisplayAlert("Ошибка", "Введите название, описание", "ОК");
             return;
         }
 
-        // Создаём объект карты
+        
         var currentCard = new Card
         {
             Title = title,
@@ -61,11 +59,10 @@ public partial class Addcards : ContentPage
 
         await DisplayAlert("Сохранено", "Карта успешно добавлена!", "ОК");
 
-        // Очищаем поля после сохранения
+       //очистка
         Titl.Text = string.Empty;
         Descrip.Text = string.Empty;
         PreviewImage.Source = null;
-        PreviewImage.IsVisible = false;
     }
 
 

@@ -4,61 +4,55 @@ namespace Tarotora
 {
     public partial class MainPage : ContentPage
     {
-        private DBfuncional db; // объект базы
-        private User currentUser; // текущий пользователь
+        private DBfuncional db; 
+        private User currentUser; 
 
         public MainPage()
         {
             InitializeComponent();
         }
 
-        protected override async void OnAppearing() // когда страница отображается
+        protected override async void OnAppearing() 
         {
             base.OnAppearing();
 
-            currentUser = User.GetUser(); // получаем текущего пользователя
-            if (currentUser == null) // если пользователь не найден
-            {
-                await DisplayAlert("Ошибка", "Пользователь не найден", "ОК");
-                await Shell.Current.GoToAsync("Login"); // возвращаемся на страницу входа
-                return;
-            }
-
+            currentUser = User.GetUser(); 
+            
             db = await DBfuncional.GetDB(); // получаем объект базы
 
-            UserNameLabel.Text = currentUser.Name; // показываем имя
-            UserSubscribeLabel.Text = $"Подписка: {currentUser.Subscribe}"; // подписка
+            UserNameLabel.Text = currentUser.Name; 
+            UserSubscribeLabel.Text = $"Подписка: {currentUser.Subscribe}"; 
 
-            var allCards = await db.GetCards(); // получаем все карты
+            var allCards = await db.GetCards(); 
             var tests = (await db.GetTests())
                         .Where(t => t.IdUser == currentUser.Id)
-                        .ToDictionary(t => t.IdCard, t => t.Progress); // получаем прогресс пользователя по картам
+                        .ToDictionary(t => t.IdCard, t => t.Progress); 
 
             var completedCards = allCards
                 .Where(c => tests.ContainsKey(c.Id) && tests[c.Id] > 0) // фильтруем пройденные карты
                 .Select(c =>
                 {
-                    c.Progress = tests[c.Id]; // записываем прогресс
+                    c.Progress = tests[c.Id]; 
                     return c;
                 })
                 .ToList();
 
-            CompletedCardsView.ItemsSource = completedCards; // отображаем в CollectionView
+            CompletedCardsView.ItemsSource = completedCards; 
 
-            if (completedCards.Count > 0) // если есть пройденные карты
+            if (completedCards.Count > 0) 
             {
                 int totalProgress = completedCards.Sum(c => c.Progress) / completedCards.Count; // средний прогресс
                 UserProgressLabel.Text = $"Пройдено всего: {totalProgress}% ({completedCards.Count} карт)";
             }
             else
             {
-                UserProgressLabel.Text = "Вы еще не прошли ни одной карты"; // если нет прогресса
+                UserProgressLabel.Text = "Вы еще не прошли ни одной карты"; // нет прогресса
             }
         }
 
         private async void OnEditProfileClicked(object sender, EventArgs e) // кнопка редактирования профиля
         {
-            await Shell.Current.GoToAsync($"EditUser?userId={currentUser.Id}"); // переходим на EditUserPage
+            await Shell.Current.GoToAsync($"EditUser?userId={currentUser.Id}"); 
         }
 
         private async void Exit(object sender, EventArgs e)

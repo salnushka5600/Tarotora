@@ -11,26 +11,26 @@ public partial class RegistrationPage : ContentPage
 		InitializeComponent();
 	}
 
-    private async void Registration(object sender, EventArgs e) // кнопка регистрации
+    private async void Registration(object sender, EventArgs e) 
     {
-        string name = NameEntry.Text; // имя
-        string login = LoginEntry.Text; // логин
-        string password = PasswordEntry.Text; // пароль
-        bool Subscription = SubscriptionSwitch.IsToggled; // подписка
+        string name = NameEntry.Text; 
+        string login = LoginEntry.Text; 
+        string password = PasswordEntry.Text; 
+        bool Subscription = SubscriptionSwitch.IsToggled; 
 
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) // проверка
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) 
         {
             await DisplayAlert("Ошибка", "Введите имя, логин и пароль", "ОК");
             return;
         }
 
-        var dbLocal = await DBfuncional.GetDB(); // объект базы
-        var user = await dbLocal.Register(login, password, name, isAdmin: false, subscribe: Subscription); // создаём пользователя
+        var dbLocal = await DBfuncional.GetDB(); 
+        var user = await dbLocal.Register(login, password, name, isAdmin: false, subscribe: Subscription); 
 
-        if (user != null) // если регистрация успешна
+        if (user != null) 
         {
             await DisplayAlert("Успех", $"Регистрация выполнена, добро пожаловать {user.Name}!", "ОК");
-            await Shell.Current.GoToAsync("///Login"); // переходим на страницу входа
+            await Shell.Current.GoToAsync("///Login");
         }
         else
         {
@@ -38,8 +38,8 @@ public partial class RegistrationPage : ContentPage
         }
     }
 
-    private async void Login(object sender, EventArgs e) // кнопка "Войти" на странице регистрации
+    private async void Login(object sender, EventArgs e) 
     {
-        await Shell.Current.GoToAsync("Login"); // переходим на LoginPage
+        await Shell.Current.GoToAsync("Login"); 
     }
 }

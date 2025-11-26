@@ -13,7 +13,7 @@ public partial class Prosmotrkolod : ContentPage
     public Prosmotrkolod()
     {
         InitializeComponent();
-        BindingContext = this; // чтобы IsAdmin работал в XAML
+        BindingContext = this; 
     }
 
     private async Task LoadCards() 

@@ -21,7 +21,6 @@ namespace Tarotora
             base.OnAppearing(); 
 
             currentUser = User.GetUser();
-            if (currentUser == null) return; // если пользователь не залогинен, выходим 
 
             db = await DBfuncional.GetDB(); 
             await LoadRandomCard(); 
