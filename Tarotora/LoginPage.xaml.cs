@@ -9,26 +9,26 @@ public partial class LoginPage : ContentPage
 		InitializeComponent();
 	}
 
-    private async void Login(object sender, EventArgs e) 
+    private async void Login(object sender, EventArgs e) //кнопка войти
     {
-        string login = LoginEntry.Text; 
-        string password = PasswordEntry.Text; 
+        string login = LoginEntry.Text; //получаем логин из поля ввода Entry
+        string password = PasswordEntry.Text; //тут тоже самое только с паролем
 
-        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) 
+        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) //чтобы не были пустыми и без пробелов
         {
             await DisplayAlert("Ошибка", "Введите логин и пароль", "ОК"); 
             return;
         }
 
-        var dbLocal = await DBfuncional.GetDB(); 
-        var user = await dbLocal.Authenticate(login, password); 
-        if (user != null) 
+        var dbLocal = await DBfuncional.GetDB(); //получаем подключение к бд асинхронно
+        var user = await dbLocal.Authenticate(login, password); // пытаемся найти пользователя в бд с таким логином и паролем
+        if (user != null) //если пользователь найден
         {
-            User.PostUser(user); 
-            ((AppShell)Shell.Current).UpdateMenu();
-            await Shell.Current.GoToAsync("Main"); 
+            User.PostUser(user); //сохраняем пользователя как текущего авторизованного
+            ((AppShell)Shell.Current).UpdateMenu(); //обновляем меню и показываем меню для авторизованного пользвателя
+            await Shell.Current.GoToAsync("Main"); //переходим на окно Main
         }
-        else
+        else 
         {
             await DisplayAlert("Ошибка", "Неверный логин или пароль", "ОК"); 
         }
@@ -36,6 +36,6 @@ public partial class LoginPage : ContentPage
 
     private async void Registration(object sender, EventArgs e) 
     {
-        await Shell.Current.GoToAsync("Registre"); 
+        await Shell.Current.GoToAsync("Registre"); //переход на регистрацию
     }
 }

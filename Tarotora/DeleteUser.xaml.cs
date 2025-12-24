@@ -18,29 +18,29 @@ public partial class DeleteUser : ContentPage
         UsersView.ItemsSource = users; // связываем CollectionView
     }
 
-    private async void OnEditClicked(object sender, EventArgs e) 
+    private async void OnEditClicked(object sender, EventArgs e) //метод редактирования sender это сама кнопка которая лежит в object
     {
-        if (sender is Button btn && btn.CommandParameter is User user) // кнопка отправила пользователя
+        if (sender is Button btn && btn.CommandParameter is User user) // если кнопка нажата и в ней лежит пользователь продолжаем sender is Button btn проверяет это кнопка или нет если да то запихиваем в переменную btn у кнопки есть параметр btn.CommandParameter и она проверяет пользователь это или нет если да то помещаем в переменную user
         {
-            await Shell.Current.GoToAsync($"EditUser?userId={user.Id}"); 
+            await Shell.Current.GoToAsync($"EditUser?userId={user.Id}"); //переход с текущей страницы на страницу редактирования
         }
     }
 
-    private async void OnDeleteClicked(object sender, EventArgs e) 
+    private async void OnDeleteClicked(object sender, EventArgs e) //удаление
     {
         if (sender is Button btn && btn.CommandParameter is User user) 
         {
-            if (user.IsAdmin)
+            if (user.IsAdmin) //чтобы пользователь не могу удалить админа
             {
                 await DisplayAlert("Ошибка", "Админ не может быть удален", "ОК");
                 return; 
             }
 
             bool confirm = await DisplayAlert("Удаление", $"Удалить пользователя {user.Name}?", "Да", "Нет");
-            if (!confirm) return; 
+            if (!confirm) return; //если нажали нет то пропускаем остальной код
 
-            await db.RemoveUser(user.Id);
-            UsersView.ItemsSource = await db.GetUsers(); 
+            await db.RemoveUser(user.Id); // если нажали да то удаляем пользователя по id из базы данных
+            UsersView.ItemsSource = await db.GetUsers(); // загружаем список пользователей из базы данных обновляем список и пользователь исчезает с вьюпанели
         }
     }
 }
