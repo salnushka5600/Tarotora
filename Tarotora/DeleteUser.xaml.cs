@@ -15,12 +15,12 @@ public partial class DeleteUser : ContentPage
 
         db = await DBfuncional.GetDB(); 
         var users = await db.GetUsers(); 
-        UsersView.ItemsSource = users; // связываем CollectionView
+        UsersView.ItemsSource = users; 
     }
 
     private async void OnEditClicked(object sender, EventArgs e) 
     {
-        if (sender is Button btn && btn.CommandParameter is User user) // кнопка отправила пользователя
+        if (sender is Button btn && btn.CommandParameter is User user) 
         {
             await Shell.Current.GoToAsync($"EditUser?userId={user.Id}"); 
         }

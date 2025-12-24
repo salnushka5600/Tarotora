@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Tarotora.BD;
 namespace Tarotora;
 
-[QueryProperty(nameof(UserId), "userId")] // позволяет получать параметр userId через Shell навигацию
+[QueryProperty(nameof(UserId), "userId")] 
 public partial class EditUserPage : ContentPage
 {
     private DBfuncional db; 
@@ -12,7 +12,6 @@ public partial class EditUserPage : ContentPage
     public EditUserPage()
     {
         InitializeComponent();
-        //контекст данных для XAML (чтобы IsAdmin работал)
         BindingContext = this;
     }
 
@@ -27,7 +26,7 @@ public partial class EditUserPage : ContentPage
         }
     }
 
-    public bool IsAdmin => User.GetUser()?.IsAdmin ?? false; // является ли текущий пользователь админом
+    public bool IsAdmin => User.GetUser()?.IsAdmin ?? false; 
 
     private async Task LoadUser() 
     {

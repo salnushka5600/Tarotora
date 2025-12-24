@@ -2,7 +2,7 @@ using Tarotora.BD;
 
 namespace Tarotora;
 
-[QueryProperty(nameof(CardId), "cardId")] // позволяет передавать параметр cardId через Shell навигацию
+[QueryProperty(nameof(CardId), "cardId")]
 public partial class EditCardPage : ContentPage
 {
     private DBfuncional db; 
@@ -30,21 +30,20 @@ public partial class EditCardPage : ContentPage
         db = await DBfuncional.GetDB(); 
         card = await db.GetCardById(cardId);
 
-        if (card != null) //карта найдена
+        if (card != null) 
         {
             TitleEntry.Text = card.Title; 
             DescriptionEditor.Text = card.Description; 
             PreviewImage.Source = card.Image;  
             PreviewImage.IsVisible = !string.IsNullOrEmpty(card.Image);
         }
-        else //карта не найдена
+        else 
         {
             await DisplayAlert("Ошибка", "Карта не найдена", "ОК"); 
             await Shell.Current.GoToAsync(".."); 
         }
     }
 
-   
 
     private async void OnSaveClicked(object sender, EventArgs e) 
     {
@@ -60,7 +59,7 @@ public partial class EditCardPage : ContentPage
             return;
         }
 
-        //обновляем
+        
         card.Title = newTitle; 
         card.Description = newDesc;
        

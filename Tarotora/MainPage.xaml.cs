@@ -18,7 +18,7 @@ namespace Tarotora
 
             currentUser = User.GetUser(); 
             
-            db = await DBfuncional.GetDB(); // получаем объект базы
+            db = await DBfuncional.GetDB(); 
 
             UserNameLabel.Text = currentUser.Name; 
             UserSubscribeLabel.Text = $"Подписка: {currentUser.Subscribe}"; 
@@ -29,7 +29,7 @@ namespace Tarotora
                         .ToDictionary(t => t.IdCard, t => t.Progress); 
 
             var completedCards = allCards
-                .Where(c => tests.ContainsKey(c.Id) && tests[c.Id] > 0) // фильтруем пройденные карты
+                .Where(c => tests.ContainsKey(c.Id) && tests[c.Id] > 0) 
                 .Select(c =>
                 {
                     c.Progress = tests[c.Id]; 
@@ -41,16 +41,16 @@ namespace Tarotora
 
             if (completedCards.Count > 0) 
             {
-                int totalProgress = completedCards.Sum(c => c.Progress) / completedCards.Count; // средний прогресс
+                int totalProgress = completedCards.Sum(c => c.Progress) / completedCards.Count; 
                 UserProgressLabel.Text = $"Пройдено всего: {totalProgress}% ({completedCards.Count} карт)";
             }
             else
             {
-                UserProgressLabel.Text = "Вы еще не прошли ни одной карты"; // нет прогресса
+                UserProgressLabel.Text = "Вы еще не прошли ни одной карты"; 
             }
         }
 
-        private async void OnEditProfileClicked(object sender, EventArgs e) // кнопка редактирования профиля
+        private async void OnEditProfileClicked(object sender, EventArgs e) 
         {
             await Shell.Current.GoToAsync($"EditUser?userId={currentUser.Id}"); 
         }

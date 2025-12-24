@@ -15,7 +15,7 @@ namespace Tarotora
             Task.Run(async () =>
             {
                 db = await DBfuncional.GetDB();
-                await db.InitDB(); // создание
+                await db.InitDB(); 
             });
 
            
@@ -43,7 +43,7 @@ namespace Tarotora
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
-            if (e.Target.Location.OriginalString == null) return;
+            if (e.Target.Location.OriginalString == null) return; 
 
             var user = User.GetUser(); 
 
@@ -69,7 +69,7 @@ namespace Tarotora
                 return;
             }
 
-            // МЕНЮШКА
+          
             Items.Add(new FlyoutItem { Title = "Профиль", Items = { new ShellContent { Title = "Профиль", ContentTemplate = new DataTemplate(typeof(MainPage)) } } });
             Items.Add(new FlyoutItem { Title = "Пройти карту", Items = { new ShellContent { Title = "Пройти карту", ContentTemplate = new DataTemplate(typeof(Check)) } } });
             Items.Add(new FlyoutItem { Title = "Колода", Items = { new ShellContent { Title = "Колода", ContentTemplate = new DataTemplate(typeof(Prosmotrkolod)) } } });

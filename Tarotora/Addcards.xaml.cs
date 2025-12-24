@@ -15,14 +15,12 @@ public partial class Addcards : ContentPage
         InitializeComponent();
         InitDB();  
     }
-    
+     
     private async void InitDB()
     {
         db = await DBfuncional.GetDB();
     }
-
-
-    
+ 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
 
@@ -34,10 +32,10 @@ public partial class Addcards : ContentPage
         {
             img = Path.Combine(FileSystem.Current.AppDataDirectory, fileResult.FileName);
 
-            using (var sourceStream = await fileResult.OpenReadAsync()) //для чтения
-            using (var destinationStream = File.Open(img, FileMode.Create)) // открываем файл по нашему пути
+            using (var sourceStream = await fileResult.OpenReadAsync()) 
+            using (var destinationStream = File.Open(img, FileMode.Create))
             {
-                await sourceStream.CopyToAsync(destinationStream); //содержимое передало в файл приложения
+                await sourceStream.CopyToAsync(destinationStream); 
             }
         }
 
@@ -59,7 +57,6 @@ public partial class Addcards : ContentPage
 
         await DisplayAlert("Сохранено", "Карта успешно добавлена!", "ОК");
 
-       //очистка
         Titl.Text = string.Empty;
         Descrip.Text = string.Empty;
         PreviewImage.Source = null;

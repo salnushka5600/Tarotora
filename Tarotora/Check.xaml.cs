@@ -26,9 +26,6 @@ namespace Tarotora
             await LoadRandomCard(); 
         }
 
-
-
-        
         private async Task LoadRandomCard()
         {
             var allCards = await db.GetCards();
@@ -57,8 +54,8 @@ namespace Tarotora
         {
             if (currentCard == null) return; 
 
-            string enteredTitle = TitleEntry.Text?.Trim() ?? ""; // получаем название карты, введённое пользователем, убираем пробелы
-            string enteredKeywords = KeywordsEditor.Text?.Trim() ?? ""; // получаем ключевые слова, убираем пробелы
+            string enteredTitle = TitleEntry.Text?.Trim() ?? ""; 
+            string enteredKeywords = KeywordsEditor.Text?.Trim() ?? ""; 
 
           
             if (string.IsNullOrWhiteSpace(enteredTitle) && string.IsNullOrWhiteSpace(enteredKeywords))
@@ -75,17 +72,17 @@ namespace Tarotora
 
 
             var keywords = currentCard.Description.Split(' ', StringSplitOptions.RemoveEmptyEntries); 
-            if (!string.IsNullOrWhiteSpace(enteredKeywords)) // если пользователь ввёл ключевые слова
+            if (!string.IsNullOrWhiteSpace(enteredKeywords)) 
             {
-                var enteredWords = enteredKeywords.Split(' ', StringSplitOptions.RemoveEmptyEntries); // разбиваем на слова
-                int matched = keywords.Count(k => enteredWords.Any(ew => ew.Equals(k, StringComparison.OrdinalIgnoreCase))); // считаем совпадения
+                var enteredWords = enteredKeywords.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                int matched = keywords.Count(k => enteredWords.Any(ew => ew.Equals(k, StringComparison.OrdinalIgnoreCase))); 
                 progress += (int)(50.0 * matched / keywords.Length); 
             }
 
             var tests = await db.GetTests(); 
-            var test = tests.FirstOrDefault(t => t.IdUser == currentUser.Id && t.IdCard == currentCard.Id); //тест текущего пользователя для этой карты
+            var test = tests.FirstOrDefault(t => t.IdUser == currentUser.Id && t.IdCard == currentCard.Id); 
 
-            if (test == null) // теста нет
+            if (test == null)
             {
                 test = new Test 
                 {
@@ -96,12 +93,12 @@ namespace Tarotora
                 };
                 await db.AddTest(test); 
             }
-            else //тест есть
+            else 
             {
-                if (progress > test.Progress) // если прогресс стал больше
+                if (progress > test.Progress) 
                 {
-                    test.Progress = progress; // обновление
-                    test.CompletedAt = DateTime.Now; // обновление 
+                    test.Progress = progress; 
+                    test.CompletedAt = DateTime.Now; 
                     await db.UpdateTest(test);
                 }
             }

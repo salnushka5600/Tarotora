@@ -52,7 +52,7 @@ public partial class Prosmotrkolod : ContentPage
         }
     }
 
-    protected async override void OnAppearing() // при отображении страницы
+    protected async override void OnAppearing()
     {
         base.OnAppearing();
         currentUser = User.GetUser(); 

@@ -20,32 +20,28 @@ namespace Tarotora.BD
         
         public List<Test> Tests { get; set; } = new();
 
-        // Счетчики для новых объектов (ID)
+        
         public int UserNextId { get; set; } = 1;
         public int CardNextId { get; set; } = 1;
         public int TestNextId { get; set; } = 1;
     }
 
-    //  Главный класс базы данных 
+    
     public class DBfuncional
     {
-        // Хранит один экземпляр базы (Singleton)
         private static DBfuncional dBfuncional;
 
-        // Путь к файлу, где сохраняются данные
-        private static readonly string DbFile = Path.Combine(FileSystem.AppDataDirectory, "tarot_db.json"); //обьединяет массив строк в путь
+        private static readonly string DbFile = Path.Combine(FileSystem.Current.AppDataDirectory, "tarot_db.json"); 
 
-        // Списки пользователей, карт и тестов в памяти
+        
         private List<User> users = new();
         private List<Card> cards = new();
         private List<Test> tests = new();
 
-        // Счетчики для новых ID
         private int userNextId = 1;
         private int cardNextId = 1;
         private int testNextId = 1;
 
-        //  Преобразуем наш объект в DBDTO для сохранения 
         public static implicit operator DBDTO(DBfuncional db)
         {
             return new DBDTO
@@ -59,7 +55,6 @@ namespace Tarotora.BD
             };
         }
 
-        //  Загружаем данные из DBDTO обратно в наш объект 
         public static void FromDTO(DBfuncional db, DBDTO dto)
         {
             db.users = dto.Users ?? new List<User>();
@@ -71,21 +66,19 @@ namespace Tarotora.BD
             db.testNextId = dto.TestNextId;
         }
 
-        //  Получаем базу данных (если нет, создаем новую) 
         public static async Task<DBfuncional> GetDB()
         {
             if (dBfuncional == null)
             {
                 dBfuncional = new DBfuncional();
                 if (File.Exists(DbFile))
-                    await dBfuncional.ReadFile(); // Читаем из файла
+                    await dBfuncional.ReadFile(); 
                 else
-                    await dBfuncional.InitDB();  // Создаем новую базу с админом и картами
+                    await dBfuncional.InitDB();  
             }
             return dBfuncional;
         }
 
-        //  Чтение данных из файла 
         private async Task ReadFile()
         {
             try
@@ -97,7 +90,7 @@ namespace Tarotora.BD
             }
             catch
             {
-                // Если ошибка чтения, просто игнорируем
+                
             }
         }
 
@@ -117,9 +110,8 @@ namespace Tarotora.BD
             }
         }
 
-        //  ПОЛЬЗОВАТЕЛИ 
+         
 
-        // Обновление пользователя
         public async Task UpdateUser(User updated)
         {
             var user = users.FirstOrDefault(u => u.Id == updated.Id);
@@ -145,22 +137,22 @@ namespace Tarotora.BD
         
         public async Task<User> GetUserById(int id)
         {
-            await Task.Delay(1000); // имитация задержки
+            await Task.Delay(1000); 
             return users.FirstOrDefault(u => u.Id == id);
         }
 
-        // Получение всех пользователей
+        
         public async Task<List<User>> GetUsers()
         {
             await Task.Delay(1000);
             return new List<User>(users);
         }
 
-        // Добавление нового пользователя (регистрация)
+        
         public async Task<User> Register(string name, string login, string password, bool subscribe = false, bool isAdmin = false)
         {
             if (users.Any(u => u.Login == login))
-                return null; // Логин уже занят
+                return null; 
 
             var user = new User
             {
@@ -177,14 +169,13 @@ namespace Tarotora.BD
             return user;
         }
 
-        // Проверка логина и пароля (вход)
         public async Task<User> Authenticate(string login, string password)
         {
             await Task.Delay(10);
             return users.FirstOrDefault(u => u.Login == login && u.Password == password);
         }
 
-        //  КАРТЫ 
+         
 
       
         public async Task AddCard(Card card)
@@ -220,7 +211,7 @@ namespace Tarotora.BD
         
         public async Task<List<Card>> GetCards() => new List<Card>(cards);
 
-        //  ТЕСТЫ 
+         
 
        
         public async Task AddTest(Test test)
@@ -245,35 +236,28 @@ namespace Tarotora.BD
             }
         }
 
-        // Удаление теста
         public async Task RemoveTest(int id)
         {
             tests.RemoveAll(t => t.Id == id);
             await SaveFile();
         }
 
-        // Получение теста по ID
         public async Task<Test> GetTestById(int id) => tests.FirstOrDefault(t => t.Id == id);
 
-        // Получение всех тестов
         public async Task<List<Test>> GetTests() => new List<Test>(tests);
 
-        //  Инициализация базы данных 
         public async Task InitDB()
         {
-            // Добавляем админа, если его нет
             if (!users.Any(u => u.IsAdmin))
             {
                 await Register("Администратор", "admin", "admin", true, true);
             }
 
-            // Добавляем обычного пользователя, если его нет
             if (!users.Any(u => !u.IsAdmin))
             {
                 await Register("Пользователь", "user", "user");
             }
 
-            // Добавляем стартовые карты
             if (!cards.Any())
             {
                 var starterCards = new List<Card>
@@ -287,7 +271,7 @@ namespace Tarotora.BD
                     await AddCard(card);
             }
 
-            await SaveFile(); // Сохраняем всё в файл
+            await SaveFile(); 
         }
     }
 }
